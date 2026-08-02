@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <style>
+      body {
+        margin: 0;
+        padding: 20px;
+        color: #202124;
+        font-family: Arial, "Noto Sans KR", sans-serif;
+        font-size: 13px;
+      }
+      h2 { margin: 0 0 16px; color: #1f4e78; font-size: 20px; }
+      .toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      button {
+        padding: 7px 14px;
+        border: 0;
+        border-radius: 4px;
+        background: #1f4e78;
+        color: #fff;
+        cursor: pointer;
+      }
+      .table-wrap {
+        max-height: 485px;
+        overflow: auto;
+        border: 1px solid #dadce0;
+      }
+      table { width: 100%; border-collapse: collapse; min-width: 1050px; }
+      th, td {
+        padding: 8px 10px;
+        border-bottom: 1px solid #e8eaed;
+        text-align: left;
+        vertical-align: top;
+      }
+      th {
+        position: sticky;
+        top: 0;
+        background: #1f4e78;
+        color: #fff;
+        white-space: nowrap;
+      }
+      tbody tr:nth-child(even) { background: #f8fafd; }
+      .empty { padding: 40px; text-align: center; color: #5f6368; }
+      #message { color: #d93025; }
+      .filters { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+      .filters input, .filters select { padding:7px; border:1px solid #dadce0; border-radius:4px; }
+    </style>
+  </head>
+  <body>
+    <div class="toolbar">
+      <h2>EPIC 목록</h2>
+      <button type="button" onclick="loadEpics()">새로고침</button>
+    </div>
+    <div class="filters">
+      <input id="keyword" placeholder="검색어" oninput="loadEpics()">
+      <select id="status" onchange="loadEpics()"><option value="">상태 전체</option><option>진행중</option><option>완료</option><option>보류</option></select>
+      <select id="priority" onchange="loadEpics()"><option value="">우선순위 전체</option><option>긴급</option><option>높음</option><option>보통</option><option>낮음</option></select>
+      <input id="parentId" placeholder="PROJECT_ID" oninput="loadEpics()">
+      <select id="sortBy" onchange="loadEpics()"><option value="name">이름</option><option value="createdAt">생성일</option><option value="updatedAt">수정일</option><option value="status">상태</option><option value="priority">우선순위</option></select>
+      <select id="sortOrder" onchange="loadEpics()"><option value="asc">오름차순</option><option value="desc">내림차순</option></select>
+    </div>
+
+    <div id="message">목록을 불러오는 중입니다...</div>
+    <div class="table-wrap" id="tableWrap" hidden>
+      <table>
+        <thead>
+          <tr>
+            <th>EPIC_ID</th>
+            <th>프로젝트</th>
+            <th>EPIC명</th>
+            <th>상태</th>
+            <th>우선순위</th>
+            <th>담당자</th>
+            <th>시작일</th>
+            <th>종료예정일</th>
+            <th>설명</th>
+          </tr>
+        </thead>
+        <tbody id="epicRows"></tbody>
+      </table>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', loadEpics);
+
+      function loadEpics() {
+        document.getElementById('message').textContent =
+          '목록을 불러오는 중입니다...';
+        document.getElementById('tableWrap').hidden = true;
+
+        google.script.run
+          .withSuccessHandler(renderEpics)
+          .withFailureHandler(function (error) {
+            document.getElementById('message').textContent =
+              error && error.message ? error.message : '목록 조회에 실패했습니다.';
+          })
+          .getEpicList(buildSearchOptions());
+      }
+
+      function buildSearchOptions() {
+        return {
+          keyword: document.getElementById('keyword').value,
+          status: document.getElementById('status').value,
+          priority: document.getElementById('priority').value,
+          parentId: document.getElementById('parentId').value,
+          sortBy: document.getElementById('sortBy').value,
+          sortOrder: document.getElementById('sortOrder').value
+        };
+      }
+
+      function renderEpics(epics) {
+        const message = document.getElementById('message');
+        const tbody = document.getElementById('epicRows');
+        tbody.innerHTML = '';
+
+        if (!epics || epics.length === 0) {
+          message.textContent = '등록된 EPIC이 없습니다.';
+          return;
+        }
+
+        epics.forEach(function (epic) {
+          const row = document.createElement('tr');
+          [
+            epic.epicId,
+            epic.projectName + ' (' + epic.projectId + ')',
+            epic.epicName,
+            epic.status,
+            epic.priority,
+            epic.owner,
+            epic.startDate,
+            epic.plannedEndDate,
+            epic.description,
+          ].forEach(function (value) {
+            const cell = document.createElement('td');
+            cell.textContent = value || '';
+            row.appendChild(cell);
+          });
+          tbody.appendChild(row);
+        });
+
+        message.textContent = '총 ' + epics.length + '건';
+        document.getElementById('tableWrap').hidden = false;
+      }
+    </script>
+  </body>
+</html>

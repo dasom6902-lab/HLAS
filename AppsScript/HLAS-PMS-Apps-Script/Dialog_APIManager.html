@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html><head><base target="_top"><style>
+body{font-family:Arial,"Noto Sans KR",sans-serif;margin:0;padding:20px;background:#f5f7fa;color:#202124}
+h2,h3{color:#1f4e78}.tabs{display:flex;gap:8px}.tabs button,button{border:0;border-radius:6px;padding:9px 14px;background:#1f4e78;color:#fff;cursor:pointer}
+.panel{background:#fff;border-radius:10px;padding:16px;margin-top:14px;box-shadow:0 1px 4px #0002}
+input,select{padding:8px;border:1px solid #dadce0;border-radius:5px;margin:4px;min-width:180px}
+table{width:100%;border-collapse:collapse;font-size:12px}th,td{padding:7px;border-bottom:1px solid #eee;text-align:left}
+pre{max-height:280px;overflow:auto;background:#f8f9fa;padding:10px}
+</style></head><body>
+<h2>HLAS Integration Center</h2>
+<div class="tabs"><button onclick="view('api')">API Manager</button><button onclick="view('webhook')">Webhook Manager</button><button onclick="view('integration')">Integration Center</button></div>
+<section id="api" class="panel"><h3>API Key / Endpoint / OpenAPI</h3>
+<input id="client" placeholder="Client"><button onclick="issue()">API Key 발급</button>
+<button onclick="loadEndpoints()">Endpoint 조회</button><button onclick="openapi()">OpenAPI 문서</button><pre id="apiOut"></pre></section>
+<section id="webhook" class="panel" hidden><h3>Webhook</h3>
+<input id="event" placeholder="TASK_CREATED"><input id="url" value="mock://success" placeholder="Target URL"><button onclick="hook()">등록</button><button onclick="loadHooks()">조회</button><pre id="hookOut"></pre></section>
+<section id="integration" class="panel" hidden><h3>External Integration</h3>
+<input id="intName" placeholder="연동명"><select id="intType"><option>ERP</option><option>WMS</option><option>MES</option><option>GOOGLE_WORKSPACE</option><option>GENERIC_REST</option></select>
+<input id="baseUrl" value="mock://integration" placeholder="Base URL"><button onclick="addIntegration()">등록</button><button onclick="loadIntegrations()">조회</button><pre id="intOut"></pre></section>
+<script>
+function view(id){['api','webhook','integration'].forEach(x=>document.getElementById(x).hidden=x!==id)}
+function call(fn,arg,out){const r=google.script.run.withSuccessHandler(x=>show(out,x)).withFailureHandler(e=>show(out,{error:e.message}));arg===undefined?r[fn]():r[fn](arg)}
+function show(id,v){document.getElementById(id).textContent=JSON.stringify(v&&v.data!==undefined?v.data:v,null,2)}
+function issue(){call('issueApiKey',{client:document.getElementById('client').value,permissions:['READ']},'apiOut')}
+function loadEndpoints(){call('listEndpoints',undefined,'apiOut')}function openapi(){call('generateOpenApiDocument',undefined,'apiOut')}
+function hook(){call('registerWebhook',{event:document.getElementById('event').value,targetUrl:document.getElementById('url').value},'hookOut')}
+function loadHooks(){call('listWebhooks',{},'hookOut')}
+function addIntegration(){call('registerIntegration',{name:document.getElementById('intName').value,type:document.getElementById('intType').value,baseUrl:document.getElementById('baseUrl').value},'intOut')}
+function loadIntegrations(){call('listIntegrations',undefined,'intOut')}
+</script></body></html>

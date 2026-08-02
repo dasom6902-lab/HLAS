@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+    body{font-family:Arial,sans-serif;margin:0;padding:18px;color:#202124}
+    h2{margin:0;color:#1f4e78}.toolbar,.filters{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+    .toolbar{justify-content:space-between}button,input,select{padding:7px;border:1px solid #dadce0;border-radius:4px}
+    button{cursor:pointer;background:#1f4e78;color:#fff}table{border-collapse:collapse;width:100%;font-size:13px}
+    th,td{border:1px solid #dadce0;padding:8px;text-align:left}th{background:#1f4e78;color:#fff}
+    #content{padding:12px}
+  </style>
+</head>
+<body>
+  <div class="toolbar"><h2>PROJECT 목록</h2><button onclick="loadProjects()">새로고침</button></div>
+  <div class="filters">
+    <input id="keyword" placeholder="검색어" oninput="loadProjects()">
+    <select id="status" onchange="loadProjects()"><option value="">상태 전체</option><option>진행중</option><option>완료</option><option>보류</option></select>
+    <select id="sortBy" onchange="loadProjects()"><option value="name">이름</option><option value="createdAt">생성일</option><option value="updatedAt">수정일</option><option value="status">상태</option></select>
+    <select id="sortOrder" onchange="loadProjects()"><option value="asc">오름차순</option><option value="desc">내림차순</option></select>
+  </div>
+  <div id="content">목록을 불러오는 중입니다...</div>
+  <script>
+    loadProjects();
+    function loadProjects(){
+      google.script.run.withSuccessHandler(render).withFailureHandler(showError)
+        .getProjectList({
+          keyword:document.getElementById('keyword').value,
+          status:document.getElementById('status').value,
+          sortBy:document.getElementById('sortBy').value,
+          sortOrder:document.getElementById('sortOrder').value
+        });
+    }
+    function render(response){
+      if(!response||!response.ok){showError(response&&response.error);return}
+      const rows=response.data||[], content=document.getElementById('content');
+      if(!rows.length){content.textContent='등록된 PROJECT가 없습니다.';return}
+      let html='<table><thead><tr><th>PROJECT_ID</th><th>프로젝트명</th><th>상태</th><th>담당자</th><th>설명</th></tr></thead><tbody>';
+      rows.forEach(function(x){html+='<tr><td>'+safe(x.projectId)+'</td><td>'+safe(x.projectName)+'</td><td>'+safe(x.status)+'</td><td>'+safe(x.owner)+'</td><td>'+safe(x.description)+'</td></tr>'});
+      content.innerHTML=html+'</tbody></table>';
+    }
+    function safe(value){const e=document.createElement('div');e.textContent=value||'';return e.innerHTML}
+    function showError(error){alert(error&&error.message?error.message:String(error||'조회 오류'))}
+  </script>
+</body>
+</html>

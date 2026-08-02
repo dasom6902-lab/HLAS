@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+    body{font-family:Arial,sans-serif;margin:0;padding:20px;color:#1f2937}
+    h2{margin:0 0 16px;color:#1f4e78}
+    .filters{display:grid;grid-template-columns:180px 180px 180px 100px;gap:8px;margin-bottom:14px}
+    select,button{padding:8px;border:1px solid #cbd5e1;border-radius:5px}
+    button{background:#1f4e78;color:#fff;border:0;cursor:pointer}
+    button.secondary{background:#64748b}
+    button.danger{background:#b91c1c}
+    button:disabled{background:#cbd5e1;cursor:not-allowed}
+    .message{padding:20px;text-align:center;color:#64748b}
+    .list{max-height:570px;overflow:auto}
+    .item{border:1px solid #dbe2ea;border-left:5px solid #64748b;border-radius:6px;padding:13px;margin-bottom:9px}
+    .item.UNREAD{background:#eff6ff}
+    .item.INFO{border-left-color:#2563eb}.item.WARNING{border-left-color:#d97706}
+    .item.ERROR{border-left-color:#dc2626}.item.SUCCESS{border-left-color:#16a34a}
+    .head{display:flex;justify-content:space-between;gap:12px}
+    .title{font-weight:bold}.meta{font-size:12px;color:#64748b;margin-top:5px}
+    .message-text{margin-top:9px;white-space:pre-wrap}
+    .actions{margin-top:10px;display:flex;gap:7px}
+  </style>
+</head>
+<body>
+  <h2>Notification Center</h2>
+  <div class="filters">
+    <select id="status">
+      <option value="">전체 상태</option>
+      <option value="UNREAD">읽지 않음</option>
+      <option value="READ">읽음</option>
+    </select>
+    <select id="type">
+      <option value="">전체 TYPE</option>
+      <option>INFO</option><option>WARNING</option>
+      <option>ERROR</option><option>SUCCESS</option>
+    </select>
+    <select id="sortOrder">
+      <option value="desc">최신순</option>
+      <option value="asc">오래된순</option>
+    </select>
+    <button onclick="loadNotifications()">조회</button>
+  </div>
+  <div id="content" class="message">알림을 불러오는 중입니다.</div>
+  <script>
+    let permission = { update:false, delete:false };
+    google.script.run.withSuccessHandler(function(context) {
+      permission = context || permission;
+      loadNotifications();
+    }).getPermissionContext();
+
+    function loadNotifications() {
+      document.getElementById('content').className = 'message';
+      document.getElementById('content').textContent = '알림을 불러오는 중입니다.';
+      google.script.run
+        .withSuccessHandler(renderNotifications)
+        .withFailureHandler(showError)
+        .getNotificationList({
+          status:value('status'), type:value('type'),
+          sortOrder:value('sortOrder')
+        });
+    }
+    function renderNotifications(response) {
+      if (!response || !response.ok) return showError(response && response.error);
+      const rows = response.data || [];
+      if (!rows.length) {
+        document.getElementById('content').className = 'message';
+        document.getElementById('content').textContent = '조회된 알림이 없습니다.';
+        return;
+      }
+      document.getElementById('content').className = 'list';
+      document.getElementById('content').innerHTML = rows.map(function(row) {
+        const readButton = row.status === 'UNREAD'
+          ? '<button class="secondary" ' + (!permission.update?'disabled':'') +
+            ' onclick="markRead(\'' + esc(row.notificationId) + '\')">읽음</button>'
+          : '';
+        const deleteButton = '<button class="danger" ' +
+          (!permission.delete?'disabled':'') + ' onclick="removeNotification(\'' +
+          esc(row.notificationId) + '\')">삭제</button>';
+        return '<div class="item ' + esc(row.type) + ' ' + esc(row.status) + '">' +
+          '<div class="head"><span class="title">[' + esc(row.type) + '] ' +
+          esc(row.title) + '</span><span>' + esc(row.status) + '</span></div>' +
+          '<div class="meta">' + esc(row.timestamp) + ' · ' + esc(row.entity) +
+          ' · ' + esc(row.entityId) + '</div><div class="message-text">' +
+          esc(row.message) + '</div><div class="actions">' + readButton +
+          deleteButton + '</div></div>';
+      }).join('');
+    }
+    function markRead(id) {
+      google.script.run.withSuccessHandler(handleMutation)
+        .withFailureHandler(showError).markAsRead(id);
+    }
+    function removeNotification(id) {
+      if (!confirm('알림을 삭제하시겠습니까?')) return;
+      google.script.run.withSuccessHandler(handleMutation)
+        .withFailureHandler(showError).deleteNotification(id);
+    }
+    function handleMutation(response) {
+      if (!response || !response.ok) return showError(response && response.error);
+      loadNotifications();
+    }
+    function value(id){return document.getElementById(id).value}
+    function esc(v){const e=document.createElement('div');e.textContent=v||'';return e.innerHTML}
+    function showError(error) {
+      document.getElementById('content').className='message';
+      document.getElementById('content').textContent =
+        error&&error.message?error.message:String(error||'처리 오류');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+<!DOCTYPE html><html><head><base target="_top"><style>
+body{font-family:Arial,"Noto Sans KR",sans-serif;margin:0;padding:20px;background:#f5f7fa;color:#202124}
+h2,h3{color:#1f4e78}.toolbar{display:flex;gap:8px;flex-wrap:wrap}.panel{background:#fff;border-radius:10px;padding:16px;margin-top:14px;box-shadow:0 1px 4px #0002}
+button{border:0;border-radius:6px;padding:9px 14px;background:#1f4e78;color:#fff;cursor:pointer}.danger{background:#b3261e}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.card{padding:14px;border-radius:8px;background:#f8f9fa}.value{font-size:24px;font-weight:bold}
+table{width:100%;border-collapse:collapse;font-size:12px}th,td{padding:7px;border-bottom:1px solid #eee;text-align:left}.HEALTHY{color:#188038}.DOWN{color:#b3261e}.DEGRADED{color:#e37400}
+</style></head><body>
+<h2>HLAS System Health</h2><div class="toolbar">
+<button onclick="health()">Health Check</button><button onclick="metrics()">Performance</button><button onclick="flags()">Feature Flags</button>
+<button onclick="maintenance(false,false,false)">정상 운영</button><button onclick="maintenance(false,true,false)">Read Only</button><button class="danger" onclick="maintenance(false,false,true)">Emergency Stop</button>
+</div><div id="summary" class="panel">상태를 조회하세요.</div><div id="output" class="panel"></div>
+<script>
+function call(fn,arg,cb){const r=google.script.run.withSuccessHandler(x=>cb(x)).withFailureHandler(e=>show({error:e.message}));arg===undefined?r[fn]():r[fn](arg)}
+function health(){call('runHealthCheck',undefined,r=>{show(r);if(r&&r.ok){document.getElementById('summary').innerHTML='<h3 class="'+r.data.status+'">'+r.data.status+'</h3>'+r.data.timestamp}})}
+function metrics(){call('getMetrics',{limit:50},show)}function flags(){call('listFeatureFlags',undefined,show)}
+function maintenance(m,r,e){call('setMaintenanceState',{maintenance:m,readOnly:r,emergencyStop:e},show)}
+function show(r){const d=r&&r.data!==undefined?r.data:r;if(d&&d.checks){document.getElementById('output').innerHTML='<table><tr><th>Component</th><th>Status</th><th>Response</th><th>Message</th></tr>'+d.checks.map(x=>'<tr><td>'+x.component+'</td><td class="'+x.status+'">'+x.status+'</td><td>'+x.responseTime+'ms</td><td>'+x.message+'</td></tr>').join('')+'</table>'}else document.getElementById('output').textContent=JSON.stringify(d,null,2)}
+</script></body></html>

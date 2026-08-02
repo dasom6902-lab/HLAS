@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <style>
+      body { font-family: Arial, sans-serif; margin: 0; padding: 22px; color: #202124; }
+      h2 { margin: 0 0 18px; color: #1f4e78; }
+      label { display: block; margin: 10px 0 4px; font-weight: 700; }
+      input, select, textarea {
+        box-sizing: border-box; width: 100%; padding: 8px;
+        border: 1px solid #dadce0; border-radius: 4px;
+      }
+      textarea { height: 68px; resize: vertical; }
+      .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+      .required { color: #c5221f; }
+      .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
+      button { border: 0; border-radius: 4px; padding: 9px 18px; cursor: pointer; }
+      .primary { background: #1f4e78; color: #fff; }
+      .secondary { background: #f1f3f4; }
+      #message { min-height: 20px; margin-top: 10px; color: #c5221f; }
+      .loading { color: #5f6368; }
+    </style>
+  </head>
+  <body>
+    <h2 id="title">TASK 등록</h2>
+
+    <label for="functionId">FUNCTION <span class="required">*</span></label>
+    <select id="functionId" disabled></select>
+
+    <label for="taskName">작업명 <span class="required">*</span></label>
+    <input id="taskName" maxlength="200">
+
+    <label for="description">설명</label>
+    <textarea id="description"></textarea>
+
+    <div class="grid">
+      <div>
+        <label for="status">상태 <span class="required">*</span></label>
+        <select id="status"></select>
+      </div>
+      <div>
+        <label for="priority">우선순위</label>
+        <select id="priority"></select>
+      </div>
+      <div>
+        <label for="owner">담당자</label>
+        <input id="owner" maxlength="100">
+      </div>
+      <div>
+        <label for="progress">진행률(%)</label>
+        <input id="progress" type="number" min="0" max="100" value="0">
+      </div>
+      <div>
+        <label for="startDate">시작일</label>
+        <input id="startDate" type="date">
+      </div>
+      <div>
+        <label for="plannedEndDate">완료예정일</label>
+        <input id="plannedEndDate" type="date">
+      </div>
+      <div>
+        <label for="completedDate">완료일</label>
+        <input id="completedDate" type="date">
+      </div>
+    </div>
+
+    <div id="message" class="loading">화면을 준비하는 중입니다...</div>
+    <div class="actions">
+      <button class="secondary" onclick="google.script.host.close()">취소</button>
+      <button id="saveButton" class="primary" onclick="saveTask()" disabled>저장</button>
+    </div>
+
+    <script>
+      const taskId = <?!= JSON.stringify(taskId || '') ?>;
+
+      google.script.run
+        .withSuccessHandler(initializeForm)
+        .withFailureHandler(showTransportError)
+        .getTaskFormData(taskId);
+
+      function initializeForm(response) {
+        if (!response || !response.ok) {
+          showApiError(response);
+          return;
+        }
+
+        const data = response.data;
+        fillSelect('functionId', data.functionOptions, 'functionId', function (item) {
+          return item.functionId + ' · ' + item.functionName;
+        });
+        fillSelect('status', data.statuses, null, function (item) { return item; });
+        fillSelect('priority', data.priorities, null, function (item) { return item; });
+
+        if (data.task) {
+          const item = data.task;
+          document.getElementById('title').textContent = 'TASK 수정';
+          document.getElementById('functionId').value = item.functionId;
+          document.getElementById('taskName').value = item.taskName;
+          document.getElementById('description').value = item.description;
+          document.getElementById('status').value = item.status;
+          document.getElementById('priority').value = item.priority;
+          document.getElementById('owner').value = item.owner;
+          document.getElementById('progress').value = item.progress;
+          document.getElementById('startDate').value = item.startDate;
+          document.getElementById('plannedEndDate').value = item.plannedEndDate;
+          document.getElementById('completedDate').value = item.completedDate;
+        } else {
+          document.getElementById('status').value = data.defaultStatus;
+          document.getElementById('priority').value = data.defaultPriority;
+        }
+
+        document.getElementById('functionId').disabled = false;
+        document.getElementById('saveButton').disabled = false;
+        document.getElementById('message').textContent =
+          data.functionOptions.length ? '' : '먼저 FUNCTION을 등록해 주세요.';
+        document.getElementById('message').className = '';
+
+        if (!data.functionOptions.length) {
+          document.getElementById('saveButton').disabled = true;
+        }
+      }
+
+      function fillSelect(id, items, valueKey, labelBuilder) {
+        const select = document.getElementById(id);
+        select.innerHTML = '';
+        items.forEach(function (item) {
+          const option = document.createElement('option');
+          option.value = valueKey ? item[valueKey] : item;
+          option.textContent = labelBuilder(item);
+          select.appendChild(option);
+        });
+      }
+
+      function saveTask() {
+        const payload = {
+          functionId: document.getElementById('functionId').value,
+          taskName: document.getElementById('taskName').value,
+          description: document.getElementById('description').value,
+          status: document.getElementById('status').value,
+          priority: document.getElementById('priority').value,
+          owner: document.getElementById('owner').value,
+          progress: document.getElementById('progress').value,
+          startDate: document.getElementById('startDate').value,
+          plannedEndDate: document.getElementById('plannedEndDate').value,
+          completedDate: document.getElementById('completedDate').value
+        };
+
+        document.getElementById('saveButton').disabled = true;
+        document.getElementById('message').textContent = '저장 중입니다...';
+
+        const runner = google.script.run
+          .withSuccessHandler(handleSaveResult)
+          .withFailureHandler(showTransportError);
+
+        if (taskId) {
+          runner.updateTask(taskId, payload);
+        } else {
+          runner.createTask(payload);
+        }
+      }
+
+      function handleSaveResult(response) {
+        if (!response || !response.ok) {
+          showApiError(response);
+          document.getElementById('saveButton').disabled = false;
+          return;
+        }
+        alert(taskId ? 'TASK가 수정되었습니다.' : 'TASK가 생성되었습니다.');
+        google.script.host.close();
+      }
+
+      function showApiError(response) {
+        const error = response && response.error;
+        document.getElementById('message').textContent =
+          error && error.message ? error.message : '처리 중 오류가 발생했습니다.';
+        document.getElementById('message').className = '';
+      }
+
+      function showTransportError(error) {
+        document.getElementById('message').textContent =
+          error && error.message ? error.message : String(error);
+        document.getElementById('message').className = '';
+        document.getElementById('saveButton').disabled = false;
+      }
+    </script>
+  </body>
+</html>

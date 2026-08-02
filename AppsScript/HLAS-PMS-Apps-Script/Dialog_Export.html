@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>body{font-family:Arial,sans-serif;margin:24px;color:#1f2937}select,button{font-size:14px;padding:8px;margin:8px}pre{background:#f3f4f6;padding:12px}</style>
+</head>
+<body>
+  <h2>Export Center</h2>
+  <select id="entity"><option>PROJECT</option><option>EPIC</option><option>FEATURE</option><option>FUNCTION</option><option>TASK</option></select>
+  <select id="format"><option>CSV</option><option>JSON</option></select>
+  <button onclick="downloadEntity()">Entity 다운로드</button>
+  <button onclick="downloadAll()">전체 JSON 다운로드</button>
+  <pre id="result">대기 중</pre>
+  <script>
+    function save(r){if(!r.ok){show(r);return;}const d=r.data;const blob=new Blob([d.content],{type:d.mimeType});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=d.fileName;a.click();URL.revokeObjectURL(a.href);show({ok:true,fileName:d.fileName,count:d.count});}
+    function show(v){document.getElementById('result').textContent=JSON.stringify(v,null,2);}
+    function fail(e){show({ok:false,error:String(e.message||e)});}
+    function downloadEntity(){google.script.run.withSuccessHandler(save).withFailureHandler(fail).exportEntity({entity:document.getElementById('entity').value,format:document.getElementById('format').value});}
+    function downloadAll(){google.script.run.withSuccessHandler(save).withFailureHandler(fail).exportAll();}
+  </script>
+</body>
+</html>

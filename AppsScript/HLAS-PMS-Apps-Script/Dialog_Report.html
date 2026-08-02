@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+    body{font-family:Arial,"Noto Sans KR",sans-serif;margin:0;padding:22px;background:#f5f7fa;color:#202124}
+    h2{color:#1f4e78}.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+    button{border:0;border-radius:6px;padding:10px 16px;background:#1f4e78;color:#fff;cursor:pointer}
+    button.secondary{background:#5f6368}pre{background:#fff;padding:16px;border-radius:8px;white-space:pre-wrap;max-height:500px;overflow:auto}
+    #status{margin:10px 0;color:#5f6368}
+  </style>
+</head>
+<body>
+  <h2>HLAS Report Center</h2>
+  <div class="toolbar">
+    <button onclick="run('generateDailyReport')">Daily</button>
+    <button onclick="run('generateWeeklyReport')">Weekly</button>
+    <button onclick="run('generateMonthlyReport')">Monthly</button>
+    <button class="secondary" onclick="exportData('CSV')">CSV Export</button>
+    <button class="secondary" onclick="exportData('JSON')">JSON Export</button>
+  </div>
+  <div id="status">보고서 종류를 선택하세요.</div>
+  <pre id="output"></pre>
+  <script>
+    function run(name){
+      setStatus('보고서를 생성하는 중입니다...');
+      google.script.run.withSuccessHandler(show).withFailureHandler(fail)[name]();
+    }
+    function exportData(format){
+      setStatus(format+' 파일을 준비하는 중입니다...');
+      google.script.run.withSuccessHandler(function(r){
+        show(r);
+        if(!r||!r.ok)return;
+        const blob=new Blob([r.data.content],{type:format==='CSV'?'text/csv':'application/json'});
+        const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=r.data.fileName;a.click();
+        URL.revokeObjectURL(a.href);
+      }).withFailureHandler(fail).exportDashboard({format:format});
+    }
+    function show(r){if(!r||!r.ok){fail(r&&r.error);return}setStatus('완료');document.getElementById('output').textContent=JSON.stringify(r.data,null,2)}
+    function fail(e){setStatus('오류: '+(e&&e.message||e));}
+    function setStatus(v){document.getElementById('status').textContent=v}
+  </script>
+</body>
+</html>

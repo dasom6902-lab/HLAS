@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+    body{font-family:Arial,sans-serif;margin:0;padding:20px;color:#1f2937}
+    h2{margin:0 0 16px;color:#1f4e78}
+    .filters{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:14px}
+    input,select,button{box-sizing:border-box;padding:8px;border:1px solid #cbd5e1;border-radius:5px}
+    button{background:#1f4e78;color:#fff;border:0;cursor:pointer}
+    .message{padding:18px;text-align:center;color:#64748b}
+    .table-wrap{max-height:580px;overflow:auto;border:1px solid #dbe2ea}
+    table{width:100%;border-collapse:collapse;font-size:12px}
+    th{position:sticky;top:0;background:#1f4e78;color:#fff;padding:9px;text-align:left}
+    td{padding:8px;border-bottom:1px solid #e5e7eb;vertical-align:top}
+    tr:nth-child(even){background:#f8fafc}
+    .SUCCESS{color:#15803d;font-weight:bold}
+    .FAIL{color:#b91c1c;font-weight:bold}
+    .DENIED{color:#c2410c;font-weight:bold}
+  </style>
+</head>
+<body>
+  <h2>Audit Center</h2>
+  <div class="filters">
+    <input id="dateFrom" type="date" title="시작일">
+    <input id="dateTo" type="date" title="종료일">
+    <input id="user" placeholder="사용자">
+    <select id="action">
+      <option value="">전체 Action</option>
+      <option>CREATE</option><option>UPDATE</option><option>DELETE</option>
+      <option>LOGIN</option><option>DASHBOARD</option>
+      <option>PERMISSION_DENIED</option><option>ERROR</option>
+    </select>
+    <select id="entity">
+      <option value="">전체 Entity</option>
+      <option>PROJECT</option><option>EPIC</option><option>FEATURE</option>
+      <option>FUNCTION</option><option>TASK</option><option>SYSTEM</option>
+    </select>
+    <select id="result">
+      <option value="">전체 Result</option>
+      <option>SUCCESS</option><option>FAIL</option><option>DENIED</option>
+    </select>
+    <select id="sortOrder">
+      <option value="desc">최신순</option>
+      <option value="asc">오래된순</option>
+    </select>
+    <button onclick="loadAudit()">검색</button>
+  </div>
+  <div id="content" class="message">감사 기록을 불러오는 중입니다.</div>
+  <script>
+    function loadAudit() {
+      document.getElementById('content').className = 'message';
+      document.getElementById('content').textContent = '감사 기록을 불러오는 중입니다.';
+      google.script.run
+        .withSuccessHandler(renderAudit)
+        .withFailureHandler(showError)
+        .getAuditList({
+          dateFrom: value('dateFrom'), dateTo: value('dateTo'),
+          user: value('user'), action: value('action'),
+          entity: value('entity'), result: value('result'),
+          sortOrder: value('sortOrder')
+        });
+    }
+    function renderAudit(response) {
+      if (!response || !response.ok) {
+        showError(response && response.error);
+        return;
+      }
+      const rows = response.data || [];
+      if (!rows.length) {
+        document.getElementById('content').className = 'message';
+        document.getElementById('content').textContent = '조회된 감사 기록이 없습니다.';
+        return;
+      }
+      const html = '<div class="table-wrap"><table><thead><tr>' +
+        '<th>시간</th><th>사용자</th><th>Role</th><th>Action</th>' +
+        '<th>Entity</th><th>ID</th><th>Result</th><th>Message</th>' +
+        '</tr></thead><tbody>' + rows.map(function(row) {
+          return '<tr><td>' + esc(row.timestamp) + '</td><td>' + esc(row.user) +
+            '</td><td>' + esc(row.role) + '</td><td>' + esc(row.action) +
+            '</td><td>' + esc(row.entity) + '</td><td>' + esc(row.entityId) +
+            '</td><td class="' + esc(row.result) + '">' + esc(row.result) +
+            '</td><td title="' + esc(row.detail) + '">' + esc(row.message) +
+            '</td></tr>';
+        }).join('') + '</tbody></table></div>';
+      document.getElementById('content').className = '';
+      document.getElementById('content').innerHTML = html;
+    }
+    function value(id) { return document.getElementById(id).value; }
+    function esc(value) {
+      const element = document.createElement('div');
+      element.textContent = value || '';
+      return element.innerHTML;
+    }
+    function showError(error) {
+      document.getElementById('content').className = 'message';
+      document.getElementById('content').textContent =
+        error && error.message ? error.message : String(error || '조회 오류');
+    }
+    loadAudit();
+  </script>
+</body>
+</html>

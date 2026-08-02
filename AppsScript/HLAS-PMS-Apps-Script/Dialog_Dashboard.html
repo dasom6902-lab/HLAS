@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+    body{font-family:Arial,"Noto Sans KR",sans-serif;margin:0;padding:20px;background:#f5f7fa;color:#202124}
+    h2,h3{color:#1f4e78}.tabs{display:flex;gap:8px;margin-bottom:16px}.tabs button{border:0;border-radius:6px;padding:9px 15px;cursor:pointer}
+    .tabs .active{background:#1f4e78;color:#fff}.cards{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+    .card,.panel{background:#fff;border-radius:10px;padding:16px;box-shadow:0 1px 4px #0002}
+    .value{font-size:27px;font-weight:bold;color:#1f4e78}.label{color:#5f6368;font-size:12px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}.wide{margin-top:14px}
+    table{width:100%;border-collapse:collapse;font-size:12px}th,td{padding:7px;border-bottom:1px solid #eee;text-align:left}
+    .metric{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #eee}
+    #message{text-align:center;padding:40px}.error{color:#b3261e}
+  </style>
+</head>
+<body>
+  <h2>HLAS Analytics & KPI Dashboard</h2>
+  <div class="tabs"><button id="tabKpi" onclick="switchView('KPI')">KPI</button><button id="tabAnalytics" onclick="switchView('ANALYTICS')">Analytics</button></div>
+  <div id="message">데이터를 불러오는 중입니다...</div>
+  <main id="content" hidden>
+    <section id="kpiView">
+      <div id="cards" class="cards"></div>
+      <div class="grid">
+        <div class="panel"><h3>승인 현황</h3><div id="approval"></div></div>
+        <div class="panel"><h3>TASK 운영 지표</h3><div id="task"></div></div>
+      </div>
+      <div class="grid">
+        <div class="panel"><h3>최근 Workflow</h3><div id="workflow"></div></div>
+        <div class="panel"><h3>최근 Notification</h3><div id="notification"></div></div>
+      </div>
+      <div class="panel wide"><h3>최근 Audit</h3><div id="audit"></div></div>
+    </section>
+    <section id="analyticsView" hidden>
+      <div class="cards">
+        <div class="card"><div id="lead" class="value">0</div><div class="label">Lead Time (hours)</div></div>
+        <div class="card"><div id="cycle" class="value">0</div><div class="label">Cycle Time (hours)</div></div>
+        <div class="card"><div id="delay" class="value">0%</div><div class="label">Delay Rate</div></div>
+        <div class="card"><div id="bottleneck" class="value">-</div><div class="label">Bottleneck</div></div>
+        <div class="card"><div id="throughput" class="value">0</div><div class="label">Workflow Throughput</div></div>
+      </div>
+      <div class="panel wide"><h3>Top 작업자 / Workload</h3><div id="workload"></div></div>
+      <div class="panel wide"><h3>지연 TASK</h3><div id="delayed"></div></div>
+    </section>
+  </main>
+  <script>
+    const initialView='<?!= typeof initialView==="undefined" ? "KPI" : initialView ?>';
+    google.script.run.withSuccessHandler(render).withFailureHandler(showError).getDashboard();
+    function render(r){
+      if(!r||!r.ok){showError(r&&r.error);return}
+      const d=r.data,k=d.kpi||{},a=d.analytics||{},recent=d.recent||{};
+      const cards=[['PROJECT',k.project&&k.project.total||0],['TASK',k.task&&k.task.total||0],['완료율',(k.task&&k.task.completionRate||0)+'%'],['Notification',k.notificationCount||0],['Audit',k.auditCount||0]];
+      document.getElementById('cards').innerHTML=cards.map(x=>'<div class="card"><div class="value">'+x[1]+'</div><div class="label">'+x[0]+'</div></div>').join('');
+      metrics('approval',[['승인 대기',k.approval&&k.approval.pending||0],['승인 완료',k.approval&&k.approval.approved||0]]);
+      metrics('task',[['전체',k.task&&k.task.total||0],['완료',k.task&&k.task.completed||0],['지연율',(k.task&&k.task.delayRate||0)+'%']]);
+      table('workflow',recent.workflow,['TIMESTAMP','ENTITY','ENTITY_ID','TO_STATUS']);
+      table('notification',recent.notifications,['TIMESTAMP','TITLE','STATUS']);
+      table('audit',recent.audit,['TIMESTAMP','ACTION','ENTITY','RESULT']);
+      document.getElementById('lead').textContent=a.leadTime&&a.leadTime.value||0;
+      document.getElementById('cycle').textContent=a.cycleTime&&a.cycleTime.value||0;
+      document.getElementById('delay').textContent=(a.delay&&a.delay.value||0)+'%';
+      document.getElementById('bottleneck').textContent=a.bottleneck&&a.bottleneck.status||'-';
+      document.getElementById('throughput').textContent=k.workflowThroughput||0;
+      table('workload',a.workload||[],['owner','count']);table('delayed',recent.delayedTasks||[],['TASK_ID','작업명','완료예정일','담당자']);
+      document.getElementById('message').hidden=true;document.getElementById('content').hidden=false;switchView(initialView);
+    }
+    function metrics(id,rows){document.getElementById(id).innerHTML=rows.map(x=>'<div class="metric"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('')}
+    function table(id,rows,cols){document.getElementById(id).innerHTML=rows.length?'<table><thead><tr>'+cols.map(c=>'<th>'+c+'</th>').join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr>'+cols.map(c=>'<td>'+escapeHtml(r[c])+'</td>').join('')+'</tr>').join('')+'</tbody></table>':'데이터 없음'}
+    function switchView(v){document.getElementById('kpiView').hidden=v!=='KPI';document.getElementById('analyticsView').hidden=v!=='ANALYTICS';document.getElementById('tabKpi').className=v==='KPI'?'active':'';document.getElementById('tabAnalytics').className=v==='ANALYTICS'?'active':''}
+    function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+    function showError(e){const el=document.getElementById('message');el.className='error';el.textContent='오류: '+(e&&e.message||e)}
+  </script>
+</body>
+</html>

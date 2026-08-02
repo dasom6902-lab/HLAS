@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+    body{font-family:Arial,"Noto Sans KR",sans-serif;margin:0;padding:22px;background:#f5f7fa;color:#202124}
+    h2,h3{color:#1f4e78}.cards{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+    .card,.panel{background:#fff;border-radius:10px;padding:18px;box-shadow:0 1px 4px #0002}
+    .card .value{font-size:30px;font-weight:bold;color:#1f4e78}.label{color:#5f6368}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+    .metric{display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #eee}
+    .project{margin:12px 0}.bar{height:12px;background:#e8eaed;border-radius:6px;overflow:hidden}
+    .fill{height:100%;background:#34a853}.project-head{display:flex;justify-content:space-between;margin-bottom:5px}
+    #message{text-align:center;padding:40px}
+  </style>
+</head>
+<body>
+  <h2>KPI Dashboard</h2>
+  <div id="message">Dashboard를 불러오는 중입니다...</div>
+  <div id="dashboard" hidden>
+    <div id="cards" class="cards"></div>
+    <div class="grid">
+      <div class="panel"><h3>TASK 상태</h3><div id="status"></div></div>
+      <div class="panel"><h3>우선순위</h3><div id="priority"></div></div>
+    </div>
+    <div class="panel" style="margin-top:16px"><h3>Project Progress</h3><div id="progress"></div></div>
+  </div>
+  <script>
+    google.script.run.withSuccessHandler(renderDashboard).withFailureHandler(showError).getDashboard();
+    function renderDashboard(response){
+      if(!response||!response.ok){showError(response&&response.error);return}
+      const d=response.data;
+      const cards=[
+        ['PROJECT',d.summary.projectCount],['EPIC',d.summary.epicCount],
+        ['FEATURE',d.summary.featureCount],['FUNCTION',d.summary.functionCount],
+        ['TASK',d.summary.taskCount]
+      ];
+      document.getElementById('cards').innerHTML=cards.map(x=>'<div class="card"><div class="value">'+x[1]+'</div><div class="label">'+x[0]+'</div></div>').join('');
+      renderMetrics('status',[['대기',d.status.todo],['진행중',d.status.doing],['완료',d.status.done],['보류',d.status.hold]]);
+      renderMetrics('priority',[['긴급',d.priority.urgent],['높음',d.priority.high],['보통',d.priority.normal],['낮음',d.priority.low]]);
+      document.getElementById('progress').innerHTML=d.progress.project.length
+        ?d.progress.project.map(p=>'<div class="project"><div class="project-head"><span>'+escapeHtml(p.name)+' ('+escapeHtml(p.id)+')</span><strong>'+p.progress+'%</strong></div><div class="bar"><div class="fill" style="width:'+p.progress+'%"></div></div></div>').join('')
+        :'<div>등록된 프로젝트가 없습니다.</div>';
+      document.getElementById('message').hidden=true;
+      document.getElementById('dashboard').hidden=false;
+    }
+    function renderMetrics(id,rows){document.getElementById(id).innerHTML=rows.map(x=>'<div class="metric"><span>'+x[0]+'</span><strong>'+x[1]+'</strong></div>').join('')}
+    function escapeHtml(v){const e=document.createElement('div');e.textContent=v||'';return e.innerHTML}
+    function showError(e){document.getElementById('message').textContent=e&&e.message?e.message:'Dashboard 조회 오류'}
+  </script>
+</body>
+</html>

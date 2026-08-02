@@ -1,0 +1,413 @@
+==================================================
+[HLAS HANDOFF PROMPT]
+
+HLAS AI Team Workflow Control Rule v1.2.2
+Manager Synchronization Review Request
+
+==================================================
+
+
+FROM:
+
+① Project Control Manager
+
+
+TO:
+
+① Project Control Manager
+② Architecture Manager
+③ Coding Manager
+④ Review & QA Manager
+⑤ Documentation Manager
+
+
+TASK:
+
+HLAS Workflow Control Rule v1.2.2 검토 및
+전체 Manager 운영 기준 동기화
+
+
+==================================================
+1. 현재 상황
+==================================================
+
+
+최근 HLAS-0050 진행 과정에서
+Workflow 운영 점검이 진행되었다.
+
+
+확인 결과:
+
+기존 Role 정의와 책임 분리는 존재하였으나,
+
+일부 작업 과정에서:
+
+Task Analysis
+
+↓
+
+Coding Design
+
+↓
+
+Implementation
+
+
+단계가 빠르게 연결될 가능성이 확인되었다.
+
+
+특히:
+
+- 신규 Module 생성
+- 신규 책임 추가
+- 구조 변경 가능 작업
+
+
+의 경우 Coding 이전에
+Architecture Gate 확인이 반드시 필요하다.
+
+
+==================================================
+2. 추가 운영 규칙 목적
+==================================================
+
+
+본 규칙은 기존 HLAS AI Team Operating Rule을
+변경하지 않는다.
+
+
+유지:
+
+- Role Memory Record
+- Completion Record
+- Handoff Prompt Standard
+- Manager 책임 분리
+- Workflow 순서
+
+
+추가 목적:
+
+모든 Manager가 동일한 순서와 책임 기준으로
+작업하도록 Workflow Control 기준을 강화한다.
+
+
+==================================================
+3. 신규 기본 Workflow 적용 검토
+==================================================
+
+
+앞으로 모든 HLAS Task는 아래 순서를 기본으로 한다.
+
+
+ROLE SNAPSHOT
+
+↓
+
+Task Analysis
+
+↓
+
+Architecture Need Assessment
+
+↓
+
+② Architecture Manager 확인
+
+↓
+
+③ Coding Manager Implementation
+
+↓
+
+④ Review & QA
+
+↓
+
+⑤ Documentation
+
+↓
+
+① Project Control Final Record
+
+
+==================================================
+4. Architecture Gate 적용 기준
+==================================================
+
+
+아래 항목 발생 시:
+
+반드시 ② Architecture Manager 검토 후
+Coding 진행
+
+
+대상:
+
+
+□ 신규 Module 생성
+
+□ 신규 Layer 추가
+
+□ 기존 Module 책임 증가
+
+□ Data Flow 변경
+
+□ Public API 영향 가능성
+
+□ Schema 변경 가능성
+
+□ Business Logic 이동 가능성
+
+□ 새로운 저장 구조 추가
+
+
+==================================================
+5. Manager별 책임 확인
+==================================================
+
+
+① Project Control Manager
+
+책임:
+
+- 전체 Workflow 관리
+- 담당 Manager 지정
+- 우선순위 관리
+- 최종 Record 관리
+
+
+확인:
+
+Architecture Gate 적용 관리 필요 여부
+
+
+--------------------------------------------------
+
+
+② Architecture Manager
+
+책임:
+
+- Architecture 검토
+- Layer 책임 확인
+- Dependency 검토
+- 변경 영향 분석
+
+
+제공:
+
+- 구현 가능 범위
+- 변경 금지 영역
+- Test 기준
+- Documentation 필요 사항
+
+
+--------------------------------------------------
+
+
+③ Coding Manager
+
+책임:
+
+Architecture 승인 이후 구현
+
+
+가능:
+
+- 코드 작성
+- Refactoring
+- Test 작성
+- Bug Fix
+- Performance 개선
+
+
+금지:
+
+- 승인 없는 Architecture 변경
+- 신규 Layer 생성
+- Public API 변경
+- Schema 변경
+
+
+--------------------------------------------------
+
+
+④ Review & QA Manager
+
+책임:
+
+- Architecture 준수 확인
+- Test Evidence 검증
+- Regression 확인
+- Performance 확인
+- 운영 Risk 판단
+
+
+판정:
+
+PASS
+
+CONDITIONAL PASS
+
+FAIL
+
+
+--------------------------------------------------
+
+
+⑤ Documentation Manager
+
+책임:
+
+- 변경 기록
+- Architecture 기록
+- Test 기록
+- QA 기록
+
+
+검증:
+
+- 저장 여부
+- Revision 확인
+- 본문 검색 확인
+
+
+==================================================
+6. Role Memory 운영 강화
+==================================================
+
+
+모든 Task 시작:
+
+
+HLAS AI Role Memory Start Record
+
+
+기록:
+
+
+Project
+
+Task ID
+
+Task Name
+
+Current Role
+
+Workflow Stage
+
+Responsibility
+
+Allowed Action
+
+Restricted Action
+
+Next Handoff
+
+
+--------------------------------------------------
+
+
+모든 Task 종료:
+
+
+HLAS AI Role Memory Completion Record
+
+
+기록:
+
+
+Completed Work
+
+Test Result
+
+QA Result
+
+Issue
+
+Next Manager
+
+Transfer Prompt
+
+
+==================================================
+7. Manager 검토 요청
+==================================================
+
+
+각 Manager는 자신의 역할 기준으로 검토한다.
+
+
+확인:
+
+
+□ 현재 역할과 충돌 없는가?
+
+□ 추가 Workflow 필요 여부
+
+□ 책임 범위 수정 필요 여부
+
+□ 다른 Manager와 충돌 가능성
+
+□ 추가 예외 규칙 필요 여부
+
+
+==================================================
+8. 회신 형식
+==================================================
+
+
+아래 형식으로 회신한다.
+
+
+[HLAS Workflow Rule Review]
+
+
+Current Role:
+
+검토 결과:
+
+추가 의견:
+
+수정 필요 사항:
+
+승인 여부:
+
+
+FINAL:
+
+APPROVED
+
+또는
+
+MODIFY REQUIRED
+
+
+==================================================
+9. 최종 적용 절차
+==================================================
+
+
+전체 Manager 의견 취합
+
+↓
+
+① Project Control Final Review
+
+↓
+
+HLAS Workflow Rule 확정
+
+↓
+
+HLAS-0050 재시작
+
+
+==================================================
+
+END
+
+==================================================
+
+
+** 전달할 내용이있으면 프롤프트로 작성해주세요. 

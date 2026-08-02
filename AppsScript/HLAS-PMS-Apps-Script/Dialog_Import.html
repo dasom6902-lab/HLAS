@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+    body{font-family:Arial,sans-serif;margin:24px;color:#1f2937} select,textarea,button{font-size:14px}
+    textarea{width:100%;height:330px;margin:12px 0;padding:10px;box-sizing:border-box}
+    button{padding:9px 16px;margin-right:8px}.primary{background:#1f4e78;color:white;border:0}
+    pre{background:#f3f4f6;padding:12px;white-space:pre-wrap;max-height:180px;overflow:auto}
+  </style>
+</head>
+<body>
+  <h2>Import Center</h2>
+  <label>Entity
+    <select id="entity">
+      <option>PROJECT</option><option>EPIC</option><option>FEATURE</option>
+      <option>FUNCTION</option><option>TASK</option>
+    </select>
+  </label>
+  <input id="file" type="file" accept=".json,application/json">
+  <textarea id="data" placeholder='JSON 배열을 입력하거나 파일을 선택하세요. 예: [{"PROJECT_ID":"PRJ-0001"}]'></textarea>
+  <button onclick="preview()">Preview</button>
+  <button onclick="validateData()">Validation</button>
+  <button class="primary" onclick="execute()">Import 실행</button>
+  <pre id="result">대기 중</pre>
+  <script>
+    document.getElementById('file').addEventListener('change', function(e){
+      const reader=new FileReader();
+      reader.onload=function(){document.getElementById('data').value=reader.result;};
+      if(e.target.files[0]) reader.readAsText(e.target.files[0]);
+    });
+    function payload(){return{entity:document.getElementById('entity').value,records:JSON.parse(document.getElementById('data').value||'[]')};}
+    function show(value){document.getElementById('result').textContent=JSON.stringify(value,null,2);}
+    function fail(error){show({ok:false,error:String(error.message||error)});}
+    function preview(){try{google.script.run.withSuccessHandler(show).withFailureHandler(fail).previewImport(payload());}catch(e){fail(e);}}
+    function validateData(){try{google.script.run.withSuccessHandler(show).withFailureHandler(fail).validateImport(payload());}catch(e){fail(e);}}
+    function execute(){try{google.script.run.withSuccessHandler(show).withFailureHandler(fail).executeImport(payload());}catch(e){fail(e);}}
+  </script>
+</body>
+</html>

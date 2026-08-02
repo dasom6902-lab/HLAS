@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <style>
+      body {
+        margin: 0;
+        padding: 24px;
+        color: #202124;
+        font-family: Arial, "Noto Sans KR", sans-serif;
+        font-size: 14px;
+      }
+      h2 { margin: 0 0 20px; color: #1f4e78; font-size: 20px; }
+      .field { margin-bottom: 14px; }
+      label { display: block; margin-bottom: 6px; font-weight: 600; }
+      .required { color: #d93025; }
+      input, select, textarea {
+        box-sizing: border-box;
+        width: 100%;
+        padding: 9px 10px;
+        border: 1px solid #dadce0;
+        border-radius: 4px;
+        font: inherit;
+      }
+      textarea { min-height: 82px; resize: vertical; }
+      .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+      .actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 22px;
+      }
+      button {
+        padding: 9px 18px;
+        border: 0;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 600;
+      }
+      .cancel { background: #f1f3f4; color: #3c4043; }
+      .save { background: #1f4e78; color: #fff; }
+      button:disabled { cursor: default; opacity: 0.55; }
+      #message { min-height: 20px; margin-top: 12px; color: #d93025; }
+    </style>
+  </head>
+  <body>
+    <h2>EPIC 생성</h2>
+
+    <form id="epicForm" onsubmit="saveEpic(event)">
+      <div class="field">
+        <label for="projectId">프로젝트 <span class="required">*</span></label>
+        <select id="projectId" required disabled>
+          <option value="">프로젝트를 불러오는 중입니다...</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="epicName">EPIC명 <span class="required">*</span></label>
+        <input id="epicName" maxlength="200" required>
+      </div>
+
+      <div class="field">
+        <label for="description">설명</label>
+        <textarea id="description" maxlength="2000"></textarea>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="priority">우선순위</label>
+          <select id="priority">
+            <option value="긴급">긴급</option>
+            <option value="높음">높음</option>
+            <option value="보통" selected>보통</option>
+            <option value="낮음">낮음</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="owner">담당자</label>
+          <input id="owner" maxlength="100">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="startDate">시작일</label>
+          <input id="startDate" type="date">
+        </div>
+        <div class="field">
+          <label for="plannedEndDate">종료예정일</label>
+          <input id="plannedEndDate" type="date">
+        </div>
+      </div>
+
+      <div id="message" role="alert"></div>
+
+      <div class="actions">
+        <button class="cancel" type="button" onclick="google.script.host.close()">취소</button>
+        <button class="save" id="saveButton" type="submit">저장</button>
+      </div>
+    </form>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', loadProjects);
+
+      /**
+       * 프로젝트 선택 목록을 서버에서 불러온다.
+       */
+      function loadProjects() {
+        google.script.run
+          .withSuccessHandler(function (projects) {
+            const select = document.getElementById('projectId');
+            select.innerHTML = '';
+
+            if (!projects || projects.length === 0) {
+              select.innerHTML = '<option value="">등록된 프로젝트가 없습니다.</option>';
+              document.getElementById('message').textContent =
+                '먼저 프로젝트를 생성해 주세요.';
+              return;
+            }
+
+            select.innerHTML = '<option value="">프로젝트 선택</option>';
+            projects.forEach(function (project) {
+              const option = document.createElement('option');
+              option.value = project.projectId;
+              option.textContent =
+                project.projectName + ' (' + project.projectId + ')';
+              select.appendChild(option);
+            });
+            select.disabled = false;
+          })
+          .withFailureHandler(showFailure)
+          .getProjectOptions();
+      }
+
+      /**
+       * 폼 데이터를 서버에 전달하여 EPIC을 저장한다.
+       */
+      function saveEpic(event) {
+        event.preventDefault();
+
+        const projectId = document.getElementById('projectId').value;
+        const epicName = document.getElementById('epicName').value.trim();
+        const message = document.getElementById('message');
+        const button = document.getElementById('saveButton');
+
+        if (!projectId) {
+          message.textContent = '프로젝트를 선택해 주세요.';
+          return;
+        }
+        if (!epicName) {
+          message.textContent = 'EPIC명을 입력해 주세요.';
+          return;
+        }
+
+        message.textContent = '';
+        button.disabled = true;
+        button.textContent = '저장 중...';
+
+        google.script.run
+          .withSuccessHandler(function (result) {
+            alert(result.message || 'EPIC이 생성되었습니다.');
+            google.script.host.close();
+          })
+          .withFailureHandler(function (error) {
+            showFailure(error);
+            button.disabled = false;
+            button.textContent = '저장';
+          })
+          .createEpicRecord({
+            projectId: projectId,
+            epicName: epicName,
+            description: document.getElementById('description').value,
+            priority: document.getElementById('priority').value,
+            owner: document.getElementById('owner').value,
+            startDate: document.getElementById('startDate').value,
+            plannedEndDate: document.getElementById('plannedEndDate').value,
+          });
+      }
+
+      function showFailure(error) {
+        document.getElementById('message').textContent =
+          error && error.message ? error.message : '처리 중 오류가 발생했습니다.';
+      }
+    </script>
+  </body>
+</html>
+

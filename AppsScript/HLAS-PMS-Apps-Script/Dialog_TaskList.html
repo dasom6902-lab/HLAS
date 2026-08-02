@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <style>
+      body { font-family: Arial, sans-serif; margin: 0; padding: 18px; color: #202124; }
+      h2 { margin: 0; color: #1f4e78; }
+      .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+      button { border: 0; border-radius: 4px; padding: 7px 12px; cursor: pointer; }
+      .primary { background: #1f4e78; color: white; }
+      .danger { background: #c5221f; color: white; }
+      .secondary { background: #f1f3f4; }
+      table { border-collapse: collapse; width: 100%; font-size: 13px; }
+      th, td { border: 1px solid #dadce0; padding: 8px; text-align: left; vertical-align: top; }
+      th { background: #1f4e78; color: white; position: sticky; top: 0; }
+      .message { padding: 18px; text-align: center; color: #5f6368; }
+      .actions { white-space: nowrap; }
+      .actions button { margin-right: 4px; }
+      button:disabled { opacity:.45; cursor:not-allowed; }
+      .filters { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+      .filters input, .filters select { padding:7px; border:1px solid #dadce0; border-radius:4px; }
+    </style>
+  </head>
+  <body>
+    <div class="toolbar">
+      <h2>TASK 목록</h2>
+      <div>
+        <button class="secondary" onclick="loadTasks()">새로고침</button>
+        <button id="createButton" class="primary" onclick="openCreate()">TASK 등록</button>
+      </div>
+    </div>
+    <div class="filters">
+      <input id="keyword" placeholder="검색어" oninput="loadTasks()">
+      <select id="status" onchange="loadTasks()"><option value="">상태 전체</option><option>진행중</option><option>완료</option><option>보류</option></select>
+      <select id="priority" onchange="loadTasks()"><option value="">우선순위 전체</option><option>긴급</option><option>높음</option><option>보통</option><option>낮음</option></select>
+      <input id="parentId" placeholder="FUNCTION_ID" oninput="loadTasks()">
+      <select id="sortBy" onchange="loadTasks()"><option value="name">이름</option><option value="createdAt">생성일</option><option value="updatedAt">수정일</option><option value="status">상태</option><option value="priority">우선순위</option></select>
+      <select id="sortOrder" onchange="loadTasks()"><option value="asc">오름차순</option><option value="desc">내림차순</option></select>
+    </div>
+    <div id="content" class="message">목록을 불러오는 중입니다...</div>
+
+    <script>
+      let canDelete = false;
+      google.script.run.withSuccessHandler(function (p) {
+        canDelete = !!p.delete;
+        document.getElementById('createButton').hidden = !p.create;
+        loadTasks();
+      }).getPermissionContext();
+
+      function loadTasks() {
+        document.getElementById('content').className = 'message';
+        document.getElementById('content').textContent = '목록을 불러오는 중입니다...';
+        google.script.run
+          .withSuccessHandler(renderTasks)
+          .withFailureHandler(showTransportError)
+          .getTaskList(buildSearchOptions());
+      }
+
+      function buildSearchOptions() {
+        return {
+          keyword: document.getElementById('keyword').value,
+          status: document.getElementById('status').value,
+          priority: document.getElementById('priority').value,
+          parentId: document.getElementById('parentId').value,
+          sortBy: document.getElementById('sortBy').value,
+          sortOrder: document.getElementById('sortOrder').value
+        };
+      }
+
+      function renderTasks(response) {
+        if (!response || !response.ok) {
+          showApiError(response);
+          return;
+        }
+
+        const rows = response.data || [];
+        if (!rows.length) {
+          document.getElementById('content').className = 'message';
+          document.getElementById('content').textContent = '등록된 TASK가 없습니다.';
+          return;
+        }
+
+        const table = document.createElement('table');
+        table.innerHTML =
+          '<thead><tr>' +
+          '<th>TASK_ID</th><th>FUNCTION_ID</th><th>작업명</th>' +
+          '<th>상태</th><th>우선순위</th><th>진행률</th><th>담당자</th><th>작업</th>' +
+          '</tr></thead>';
+        const body = document.createElement('tbody');
+
+        rows.forEach(function (item) {
+          const row = document.createElement('tr');
+          appendCell(row, item.taskId);
+          appendCell(row, item.functionId);
+          appendCell(row, item.taskName);
+          appendCell(row, item.status);
+          appendCell(row, item.priority);
+          appendCell(row, item.progress + '%');
+          appendCell(row, item.owner);
+
+          const actions = document.createElement('td');
+          actions.className = 'actions';
+          const edit = document.createElement('button');
+          edit.className = 'secondary';
+          edit.textContent = '수정';
+          edit.onclick = function () { openEdit(item.taskId); };
+          const remove = document.createElement('button');
+          remove.className = 'danger';
+          remove.textContent = '삭제';
+          remove.disabled = !canDelete;
+          remove.title = canDelete ? '' : '삭제 권한이 없습니다.';
+          remove.onclick = function () { removeTask(item); };
+          actions.appendChild(edit);
+          actions.appendChild(remove);
+          row.appendChild(actions);
+          body.appendChild(row);
+        });
+
+        table.appendChild(body);
+        const content = document.getElementById('content');
+        content.className = '';
+        content.innerHTML = '';
+        content.appendChild(table);
+      }
+
+      function appendCell(row, value) {
+        const cell = document.createElement('td');
+        cell.textContent = value === undefined || value === null ? '' : value;
+        row.appendChild(cell);
+      }
+
+      function openCreate() {
+        google.script.run.showTaskCreateDialog();
+        google.script.host.close();
+      }
+
+      function openEdit(taskId) {
+        google.script.run.showTaskEditDialog(taskId);
+        google.script.host.close();
+      }
+
+      function removeTask(item) {
+        if (!confirm(item.taskName + ' TASK를 삭제하시겠습니까?')) {
+          return;
+        }
+        google.script.run
+          .withSuccessHandler(function (response) {
+            if (!response || !response.ok) {
+              showApiError(response);
+              return;
+            }
+            alert('TASK가 삭제되었습니다.');
+            loadTasks();
+          })
+          .withFailureHandler(showTransportError)
+          .deleteTask(item.taskId);
+      }
+
+      function showApiError(response) {
+        const error = response && response.error;
+        document.getElementById('content').className = 'message';
+        document.getElementById('content').textContent =
+          error && error.message ? error.message : '처리 중 오류가 발생했습니다.';
+      }
+
+      function showTransportError(error) {
+        document.getElementById('content').className = 'message';
+        document.getElementById('content').textContent =
+          error && error.message ? error.message : String(error);
+      }
+    </script>
+  </body>
+</html>

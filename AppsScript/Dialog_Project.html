@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <style>
+      body {
+        margin: 0;
+        padding: 24px;
+        color: #202124;
+        font-family: Arial, "Noto Sans KR", sans-serif;
+        font-size: 14px;
+      }
+
+      h2 {
+        margin: 0 0 20px;
+        color: #1f4e78;
+        font-size: 20px;
+      }
+
+      .field {
+        margin-bottom: 14px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 600;
+      }
+
+      .required {
+        color: #d93025;
+      }
+
+      input,
+      textarea {
+        box-sizing: border-box;
+        width: 100%;
+        padding: 9px 10px;
+        border: 1px solid #dadce0;
+        border-radius: 4px;
+        font: inherit;
+      }
+
+      textarea {
+        min-height: 82px;
+        resize: vertical;
+      }
+
+      .dates {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      .actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 22px;
+      }
+
+      button {
+        padding: 9px 18px;
+        border: 0;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 600;
+      }
+
+      .cancel {
+        background: #f1f3f4;
+        color: #3c4043;
+      }
+
+      .save {
+        background: #1f4e78;
+        color: #fff;
+      }
+
+      button:disabled {
+        cursor: default;
+        opacity: 0.55;
+      }
+
+      #message {
+        min-height: 20px;
+        margin-top: 12px;
+        color: #d93025;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>프로젝트 생성</h2>
+
+    <form id="projectForm" onsubmit="saveProject(event)">
+      <div class="field">
+        <label for="projectName">
+          프로젝트명 <span class="required">*</span>
+        </label>
+        <input id="projectName" name="projectName" maxlength="200" required>
+      </div>
+
+      <div class="field">
+        <label for="description">설명</label>
+        <textarea id="description" name="description" maxlength="2000"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="owner">담당자</label>
+        <input id="owner" name="owner" maxlength="100">
+      </div>
+
+      <div class="dates">
+        <div class="field">
+          <label for="startDate">시작일</label>
+          <input id="startDate" name="startDate" type="date">
+        </div>
+
+        <div class="field">
+          <label for="plannedEndDate">종료예정일</label>
+          <input id="plannedEndDate" name="plannedEndDate" type="date">
+        </div>
+      </div>
+
+      <div id="message" role="alert"></div>
+
+      <div class="actions">
+        <button class="cancel" type="button" onclick="google.script.host.close()">
+          취소
+        </button>
+        <button class="save" id="saveButton" type="submit">저장</button>
+      </div>
+    </form>
+
+    <script>
+      /**
+       * 폼 데이터를 서버의 createProjectRecord() 함수로 전달한다.
+       */
+      function saveProject(event) {
+        event.preventDefault();
+
+        const name = document.getElementById('projectName').value.trim();
+        const message = document.getElementById('message');
+        const saveButton = document.getElementById('saveButton');
+
+        if (!name) {
+          message.textContent = '프로젝트명을 입력해 주세요.';
+          return;
+        }
+
+        message.textContent = '';
+        saveButton.disabled = true;
+        saveButton.textContent = '저장 중...';
+
+        const formData = {
+          projectName: name,
+          description: document.getElementById('description').value,
+          owner: document.getElementById('owner').value,
+          startDate: document.getElementById('startDate').value,
+          plannedEndDate: document.getElementById('plannedEndDate').value,
+        };
+
+        google.script.run
+          .withSuccessHandler(function (result) {
+            alert(result.message || '프로젝트가 생성되었습니다.');
+            google.script.host.close();
+          })
+          .withFailureHandler(function (error) {
+            message.textContent =
+              error && error.message ? error.message : '프로젝트 저장에 실패했습니다.';
+            saveButton.disabled = false;
+            saveButton.textContent = '저장';
+          })
+          .createProjectRecord(formData);
+      }
+    </script>
+  </body>
+</html>
+

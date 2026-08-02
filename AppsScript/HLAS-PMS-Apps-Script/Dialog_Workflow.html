@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+    body{font-family:Arial,sans-serif;margin:22px;color:#1f2937}
+    input,select,button{padding:8px;margin:4px;font-size:14px}
+    button{background:#1f4e78;color:white;border:0;border-radius:3px}
+    table{width:100%;border-collapse:collapse;margin-top:14px}
+    th,td{border:1px solid #ddd;padding:7px;text-align:left}
+    th{background:#1f4e78;color:white}pre{background:#f3f4f6;padding:10px}
+  </style>
+</head>
+<body>
+  <h2>Workflow / Approval Center</h2>
+  <select id="entity">
+    <option>PROJECT</option><option>EPIC</option><option>FEATURE</option>
+    <option>FUNCTION</option><option>TASK</option>
+  </select>
+  <input id="entityId" placeholder="Entity ID">
+  <button onclick="loadState()">현재 상태</button>
+  <button onclick="loadPending()">승인 대기 목록</button>
+  <button onclick="loadHistory()">Workflow History</button>
+  <div>
+    <select id="status">
+      <option>DRAFT</option><option>READY</option><option>IN_PROGRESS</option>
+      <option>WAITING_APPROVAL</option><option>APPROVED</option>
+      <option>REJECTED</option><option>COMPLETED</option><option>CANCELLED</option>
+    </select>
+    <button onclick="change()">상태 변경</button>
+    <button onclick="request()">승인 요청</button>
+    <button onclick="approveItem()">승인</button>
+    <button onclick="rejectItem()">반려</button>
+  </div>
+  <pre id="result">대기 중</pre>
+  <script>
+    const initialMode='<?!= initialMode ?>';
+    function entity(){return document.getElementById('entity').value;}
+    function id(){return document.getElementById('entityId').value.trim();}
+    function show(v){document.getElementById('result').textContent=JSON.stringify(v,null,2);}
+    function fail(e){show({ok:false,error:String(e.message||e)});}
+    function loadState(){google.script.run.withSuccessHandler(show).withFailureHandler(fail).getWorkflowState(entity(),id());}
+    function loadPending(){google.script.run.withSuccessHandler(show).withFailureHandler(fail).getPendingApprovals(entity());}
+    function loadHistory(){google.script.run.withSuccessHandler(show).withFailureHandler(fail).getWorkflowHistory(id());}
+    function change(){google.script.run.withSuccessHandler(show).withFailureHandler(fail).changeStatus(entity(),id(),document.getElementById('status').value);}
+    function request(){google.script.run.withSuccessHandler(show).withFailureHandler(fail).requestApproval(entity(),id(),'UI 승인 요청');}
+    function approveItem(){google.script.run.withSuccessHandler(show).withFailureHandler(fail).approve(entity(),id(),'UI 승인');}
+    function rejectItem(){google.script.run.withSuccessHandler(show).withFailureHandler(fail).reject(entity(),id(),'UI 반려');}
+    if(initialMode==='APPROVAL')loadPending();
+    if(initialMode==='HISTORY')loadHistory();
+  </script>
+</body>
+</html>
