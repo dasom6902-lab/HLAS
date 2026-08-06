@@ -4541,3 +4541,15 @@ bd272411-fb98-4ef4-8d1e-74f90485ac2d
 - Revision: v1.1
 - Recorded At: 2026-08-07 08:46:48
 - Execution ID: 696f6045-68f0-4478-8452-c9a9963bb22a
+
+## HLAS-0851
+
+- Task ID: HLAS-0851
+- Source: SYSTEM
+- Change Type: MINOR
+- File Path: Records/HLAS-0851.md
+- Detected At: 2026-08-07 08:51:46
+- Detected By: HLAS-AUTO-DETECTOR
+- Revision: v1.1
+- Recorded At: 2026-08-07 08:51:50
+- Execution ID: 673907d4-759d-4e46-947a-1532ed87ed44
