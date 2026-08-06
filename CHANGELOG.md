@@ -2309,3 +2309,15 @@ bd272411-fb98-4ef4-8d1e-74f90485ac2d
 - Revision: v1.0
 - Recorded At: 2026-08-06 17:16:45
 - Execution ID: 27426413-1ace-4cbd-ae3e-caec4c3ef53a
+
+## HLAS-1721
+
+- Task ID: HLAS-1721
+- Source: SYSTEM
+- Change Type: MINOR
+- File Path: Records/HLAS-1721.md
+- Detected At: 2026-08-06 17:21:44
+- Detected By: HLAS-AUTO-DETECTOR
+- Revision: v1.0
+- Recorded At: 2026-08-06 17:21:45
+- Execution ID: abe1a065-15da-4286-8063-660d88c744cf
