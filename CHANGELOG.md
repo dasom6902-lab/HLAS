@@ -1205,3 +1205,15 @@ bd272411-fb98-4ef4-8d1e-74f90485ac2d
 - Revision: v1.0
 - Recorded At: 2026-08-06 09:36:46
 - Execution ID: c457dd8e-0f5a-422b-a03a-e727dfb6b130
+
+## HLAS-0941
+
+- Task ID: HLAS-0941
+- Source: SYSTEM
+- Change Type: MINOR
+- File Path: Records/HLAS-0941.md
+- Detected At: 2026-08-06 09:41:43
+- Detected By: HLAS-AUTO-DETECTOR
+- Revision: v1.0
+- Recorded At: 2026-08-06 09:41:45
+- Execution ID: b98e10a7-6f0e-4bb3-abf1-5f6615270f74
