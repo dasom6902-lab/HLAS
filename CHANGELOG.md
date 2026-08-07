@@ -5129,3 +5129,15 @@ bd272411-fb98-4ef4-8d1e-74f90485ac2d
 - Revision: v1.1
 - Recorded At: 2026-08-07 12:47:09
 - Execution ID: e29e0024-e378-4cc7-a8a0-87426a79baac
+
+## HLAS-1251
+
+- Task ID: HLAS-1251
+- Source: SYSTEM
+- Change Type: MINOR
+- File Path: Records/HLAS-1251.md
+- Detected At: 2026-08-07 12:51:44
+- Detected By: HLAS-AUTO-DETECTOR
+- Revision: v1.1
+- Recorded At: 2026-08-07 12:51:46
+- Execution ID: 517578cd-029f-4443-af7b-7245f02c8244
