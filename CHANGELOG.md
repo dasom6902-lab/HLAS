@@ -8177,3 +8177,15 @@ bd272411-fb98-4ef4-8d1e-74f90485ac2d
 - Revision: v1.2
 - Recorded At: 2026-08-08 09:31:47
 - Execution ID: a3b98a29-c292-4f4b-9fd3-31e8659936ae
+
+## HLAS-0936
+
+- Task ID: HLAS-0936
+- Source: SYSTEM
+- Change Type: MINOR
+- File Path: Records/HLAS-0936.md
+- Detected At: 2026-08-08 09:36:52
+- Detected By: HLAS-AUTO-DETECTOR
+- Revision: v1.2
+- Recorded At: 2026-08-08 09:36:55
+- Execution ID: a567a334-9cf0-4dcc-87fe-f877e2410f16
