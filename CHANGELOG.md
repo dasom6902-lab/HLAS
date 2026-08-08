@@ -8213,3 +8213,15 @@ bd272411-fb98-4ef4-8d1e-74f90485ac2d
 - Revision: v1.0
 - Recorded At: 2026-08-08 14:40:42
 - Execution ID: d0f0dd8f-5dea-4887-8e67-6f4909960129
+
+## HLAS-0069
+
+- Task ID: HLAS-0069
+- Source: SHEET
+- Change Type: MINOR
+- File Path: Records/HLAS-0069_BUSINESS_KEY_TEST.md
+- Detected At: 2026-08-09 00:14:03
+- Detected By: HLAS-0069-TEST
+- Revision: v1.1
+- Recorded At: 2026-08-09 00:14:06
+- Execution ID: 6eb26cdd-91f6-4772-a472-635a001c058a
