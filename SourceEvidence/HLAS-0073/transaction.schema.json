@@ -1,0 +1,162 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/dasom6902-lab/HLAS/SourceEvidence/HLAS-0073/transaction.schema.json",
+  "title": "HLAS Record Transaction",
+  "description": "Append-only mapping between an HLAS task record, revision, CHANGELOG entry, commit metadata, and evidence hash.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "transactionId",
+    "taskId",
+    "revisionMapping",
+    "changelog",
+    "commitMetadata",
+    "record",
+    "verification"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0"
+    },
+    "transactionId": {
+      "type": "string",
+      "pattern": "^HLAS-[0-9]{4}:v[0-9]+\\.[0-9]+:[0-9a-f]{40}$"
+    },
+    "taskId": {
+      "type": "string",
+      "pattern": "^HLAS-[0-9]{4}$"
+    },
+    "revisionMapping": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["appendOnly", "previousRevision", "newRevision", "changeReason"],
+      "properties": {
+        "appendOnly": { "const": true },
+        "previousRevision": {
+          "type": ["string", "null"],
+          "pattern": "^v[0-9]+\\.[0-9]+$"
+        },
+        "newRevision": {
+          "type": "string",
+          "pattern": "^v[0-9]+\\.[0-9]+$"
+        },
+        "changeReason": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "changelog": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "taskId",
+        "revision",
+        "date",
+        "changeSummary",
+        "changedLayer",
+        "changedFiles",
+        "commitId",
+        "risk",
+        "verificationStatus"
+      ],
+      "properties": {
+        "taskId": { "type": "string" },
+        "revision": { "type": "string" },
+        "date": {
+          "type": "string",
+          "format": "date"
+        },
+        "changeSummary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "changedLayer": {
+          "type": "string",
+          "minLength": 1
+        },
+        "changedFiles": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "commitId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "risk": {
+          "type": "string",
+          "minLength": 1
+        },
+        "verificationStatus": {
+          "enum": ["PASS", "FAIL", "BLOCKED"]
+        }
+      }
+    },
+    "commitMetadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repository",
+        "branch",
+        "commitId",
+        "changedFiles",
+        "hash",
+        "verificationStatus"
+      ],
+      "properties": {
+        "repository": {
+          "type": "string",
+          "pattern": "^[^/]+/[^/]+$"
+        },
+        "branch": {
+          "type": "string",
+          "minLength": 1
+        },
+        "commitId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "changedFiles": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "hash": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "verificationStatus": {
+          "enum": ["PASS", "FAIL", "BLOCKED"]
+        }
+      }
+    },
+    "record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["exists", "path", "hash"],
+      "properties": {
+        "exists": { "type": "boolean" },
+        "path": { "type": "string", "minLength": 1 },
+        "hash": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["recordExists", "commitExists", "hashMatch", "status"],
+      "properties": {
+        "recordExists": { "type": "boolean" },
+        "commitExists": { "type": "boolean" },
+        "hashMatch": { "type": "boolean" },
+        "status": {
+          "enum": ["PASS", "MISSING_COMMIT", "MISSING_RECORD", "INTEGRITY_FAILURE"]
+        }
+      }
+    }
+  }
+}
