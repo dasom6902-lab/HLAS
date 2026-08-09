@@ -1,0 +1,1 @@
+# HLAS-0071 Markdown Integrity Test\n\n| A | B |\n| --- | --- |\n| left | right |\n\n`sampleFunction`\n\n\path\value\n\nOFFICIAL_RECORD\n\n- Heading marker: #\n- Dash marker: -\n- Brackets: [sample]\n- Parentheses: (sample)\n- Angle brackets: <sample>\n- Ampersand: &\n
