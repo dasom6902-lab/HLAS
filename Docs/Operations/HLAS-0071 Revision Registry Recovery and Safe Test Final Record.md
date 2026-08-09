@@ -2,12 +2,12 @@
 
 ## Record Information
 
-| ItemValue                  |                                                                                    |
-| -------------------------- | ---------------------------------------------------------------------------------- |
+| Item | Value |
+| --- | --- |
 | Task ID                    | HLAS-0071                                                                          |
 | Task Name                  | Revision Registry Recovery & Safe Test                                             |
 | Record Type                | OFFICIAL\_RECORD                                                                   |
-| Revision                   | v1.0                                                                               |
+| Revision                   | v1.1                                                                               |
 | Target Repository          | dasom6902-lab/HLAS                                                                 |
 | Target Branch              | main                                                                               |
 | Target File Path           | Docs/Operations/HLAS-0071 Revision Registry Recovery and Safe Test Final Record.md |
@@ -81,7 +81,7 @@ Source Implementation은 완료 상태이다.
 
 Function:
 
-\`testRevisionRegistryRecoveryHLAS0071\`
+`testRevisionRegistryRecoveryHLAS0071`
 
 ## Recovery Validation Result
 
@@ -129,7 +129,7 @@ Conditional PASS 사유:
 
 ## Test Function
 
-\`testRevisionRegistryRecoveryHLAS0071\`
+`testRevisionRegistryRecoveryHLAS0071`
 
 ## Test Result
 
@@ -147,7 +147,7 @@ PASS
 
 Function:
 
-\`testRevisionRegistryRecoveryHLAS0071\`
+`testRevisionRegistryRecoveryHLAS0071`
 
 Result:
 
@@ -265,9 +265,10 @@ FOLLOW-UP REQUIRED
 
 # 11. Revision
 
-| RevisionDateDescription |            |                                 |
-| ----------------------- | ---------- | ------------------------------- |
-| v1.0                    | 2026-08-09 | Initial Official Record Content |
+| Revision | Date | Description |
+| --- | --- | --- |
+| v1.1 | 2026-08-09 | Corrective Markdown Integrity Revision |
+| v1.0 | 2026-08-09 | Initial Official Record Content |
 
 ---
 
@@ -279,14 +280,14 @@ OFFICIAL\_RECORD
 
 Revision:
 
-v1.0
+v1.1
 
 ---
 
 # 13. Final Workflow Status
 
-| StageStatus            |                       |
-| ---------------------- | --------------------- |
+| Stage | Status |
+| --- | --- |
 | Architecture           | PASS                  |
 | Coding                 | COMPLETED             |
 | QA                     | CONDITIONAL PASS      |
