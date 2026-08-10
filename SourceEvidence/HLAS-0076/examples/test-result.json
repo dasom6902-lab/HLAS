@@ -1,0 +1,46 @@
+{
+  "taskId": "HLAS-0076",
+  "status": "PASS",
+  "passed": 7,
+  "total": 7,
+  "totalDurationMs": 11.086,
+  "performanceThresholdMs": 250,
+  "dashboardDigest": "5b4956bdd238b478508270577d8aa6f42581a00cb2496395a9546880f0cfbf5d",
+  "results": [
+    {
+      "name": "Data Source Validation",
+      "status": "PASS",
+      "durationMs": 0.283
+    },
+    {
+      "name": "Dashboard Metric Validation",
+      "status": "PASS",
+      "durationMs": 0.035
+    },
+    {
+      "name": "Revision Monitoring Test",
+      "status": "PASS",
+      "durationMs": 0.041
+    },
+    {
+      "name": "CHANGELOG Monitoring Test",
+      "status": "PASS",
+      "durationMs": 0.03
+    },
+    {
+      "name": "Commit Verification Test",
+      "status": "PASS",
+      "durationMs": 0.15
+    },
+    {
+      "name": "Evidence Integrity Test",
+      "status": "PASS",
+      "durationMs": 1.658
+    },
+    {
+      "name": "Refresh Performance Test",
+      "status": "PASS",
+      "durationMs": 8.808
+    }
+  ]
+}
