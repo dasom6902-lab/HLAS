@@ -1,46 +1,81 @@
 {
   "taskId": "HLAS-0076",
   "status": "PASS",
-  "passed": 7,
-  "total": 7,
-  "totalDurationMs": 11.086,
-  "performanceThresholdMs": 250,
-  "dashboardDigest": "5b4956bdd238b478508270577d8aa6f42581a00cb2496395a9546880f0cfbf5d",
+  "passed": 11,
+  "total": 11,
+  "environment": {
+    "runtime": "v24.14.0",
+    "platform": "linux",
+    "architecture": "x64"
+  },
+  "dataVolume": {
+    "tasks": 2,
+    "sourceBytes": 1517
+  },
+  "performance": {
+    "cacheMissDurationMs": 0.424,
+    "cacheHitDurationMs": 0.172,
+    "forcedRefreshDurationMs": 0.322,
+    "totalDurationMs": 6.33,
+    "thresholdMs": 250,
+    "result": "PASS"
+  },
+  "dashboardDigest": "f22607f6163b1bab0ac7ef06fca6839988460340f342f15286f93742b6951fa7",
   "results": [
     {
-      "name": "Data Source Validation",
+      "name": "Dashboard Load Test",
       "status": "PASS",
-      "durationMs": 0.283
+      "durationMs": 0.053
     },
     {
-      "name": "Dashboard Metric Validation",
+      "name": "Revision Data Mapping Test",
       "status": "PASS",
-      "durationMs": 0.035
+      "durationMs": 0.012
     },
     {
-      "name": "Revision Monitoring Test",
+      "name": "CHANGELOG Mapping Test",
       "status": "PASS",
-      "durationMs": 0.041
+      "durationMs": 0.007
     },
     {
-      "name": "CHANGELOG Monitoring Test",
+      "name": "Commit Metadata Mapping Test",
       "status": "PASS",
-      "durationMs": 0.03
+      "durationMs": 0.009
     },
     {
-      "name": "Commit Verification Test",
+      "name": "Evidence Validation Mapping Test",
       "status": "PASS",
-      "durationMs": 0.15
+      "durationMs": 0.008
     },
     {
-      "name": "Evidence Integrity Test",
+      "name": "Governance Status Mapping Test",
       "status": "PASS",
-      "durationMs": 1.658
+      "durationMs": 0.813
     },
     {
-      "name": "Refresh Performance Test",
+      "name": "Read Only Protection Test",
       "status": "PASS",
-      "durationMs": 8.808
+      "durationMs": 0.493
+    },
+    {
+      "name": "Refresh Test",
+      "status": "PASS",
+      "durationMs": 1.873
+    },
+    {
+      "name": "Cache Consistency Test",
+      "status": "PASS",
+      "durationMs": 1.349
+    },
+    {
+      "name": "Performance Test",
+      "status": "PASS",
+      "durationMs": 1.081
+    },
+    {
+      "name": "Security Filtering Test",
+      "status": "PASS",
+      "durationMs": 0.58
     }
   ]
 }

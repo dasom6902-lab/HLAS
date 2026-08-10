@@ -1,67 +1,38 @@
-# HLAS-0076 Governance Monitoring Dashboard Architecture
+# HLAS-0076 Governance Monitoring Dashboard Runtime Architecture
 
-## Classification
+## Boundary
 
-- Task ID: HLAS-0076
-- Dashboard Type: READ ONLY MONITORING LAYER
-- Runtime Apps Script Change: NONE
-- Public API Change: NONE
-- Closed Record Change: NONE
-- History Rewrite: NONE
+- Governance Record Layer: SOURCE OF TRUTH
+- Dashboard: READ ONLY MONITORING VIEW
+- Runtime Apps Script Logic: UNCHANGED
+- Public API: UNCHANGED
+- Governance Record Schema: UNCHANGED
 
-## Dashboard Architecture
+## Data Flow
 
-The dashboard reads governance evidence, validates mappings, filters sensitive fields, aggregates metrics, and returns an immutable display model.
+`Governance Data → Read-only Adapter → Security Filter → Normalization → Cross-reference Validation → Aggregation → Dashboard Model → Refresh/Cache`
 
-`Governance Data Source → Validation / Security Filter → Aggregation → Dashboard Data Model → Monitoring Components`
+Mapping mismatches are displayed as `MISMATCH`; source records are never repaired or mutated.
 
-No dashboard operation writes to Task Record, Revision History, CHANGELOG, Commit Metadata, Evidence Reference, or Git history.
-
-## Data Source Layer
-
-Read-only inputs:
-
-- Task Record status
-- Current Revision and Revision History
-- CHANGELOG mapping and verification state
-- Commit ID, message, and verification state
-- Evidence reference, validation result, and integrity status
-
-## Dashboard Data Model
-
-Summary metrics:
-
-- Total Governance Tasks
-- Passed Tasks
-- Valid Revisions
-- Verified CHANGELOG entries
-- Verified Commits
-- Evidence Integrity PASS count
-
-## Component List
+## Components
 
 1. Governance Summary
-2. Revision Monitoring View
-3. CHANGELOG Monitoring View
-4. Commit Verification View
-5. Evidence Integrity View
+2. Revision Monitoring
+3. CHANGELOG Monitoring
+4. Commit Metadata Monitoring
+5. Evidence Integrity Monitoring
+6. Governance Status Monitoring
+7. Refresh Controller
+8. Cache Layer
+9. Security Filtering Layer
 
-## Refresh Architecture
+## Cache Rules
 
-- Manual refresh uses the source and replaces the cache.
-- Scheduled refresh uses the same forced read-only refresh path.
-- Normal refresh returns cached data within the configured TTL.
-- Data source loads are minimized without storing secret values.
+- Cache is never a source of truth.
+- TTL expiration produces `STALE_REFRESHED` and re-reads the source.
+- Forced and scheduled refresh bypass cache hits.
+- SHA-256 source digests report cache/source consistency.
 
-## Security Filtering
+## Security
 
-Keys matching token, credential, secret, password, authorization, or private key patterns are removed recursively before aggregation or display.
-
-## Generated Evidence
-
-- Dashboard module: `lib/governance-dashboard.mjs`
-- Source example: `examples/governance-source.json`
-- Generated model: `examples/generated-dashboard-model.json`
-- Test result: `examples/test-result.json`
-- Tests: `tests/validate-dashboard.mjs`
-- Validation record: `ValidationResult.md`
+Sensitive keys for tokens, credentials, secrets, passwords, authorization, private keys and personal information are recursively removed before model creation.
