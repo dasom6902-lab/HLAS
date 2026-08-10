@@ -110,11 +110,11 @@ When another Manager handoff is required:
 
 3.
 
-"다음 프롬프트를 에게 전달하시면 됩니다."
+"다음 프롬프트를 {{NEXT_MANAGER}} 에게 전달하시면 됩니다."
 
 4.
 
-"다음 전달 대상 메니저는 입니다."
+"다음 전달 대상 메니저는 {{NEXT_MANAGER}} 입니다."
 
 5.
 
@@ -128,15 +128,25 @@ Actual [HLAS HANDOFF PROMPT]
 
 Prompt 종료 후:
 
-"이제 단계 결정은 끝났습니다."
+"이제 {{CURRENT_MANAGER}} 단계 결정은 끝났습니다."
 
-"다음은 입니다."
+"다음은 {{NEXT_MANAGER}} 입니다."
 
 "따라서 다음 순서는:"
 
-" 에게 전달"
+"{{NEXT_MANAGER}} 에게 전달"
 
 "입니다."
+
+## Placeholder Semantic Definition
+
+### {{CURRENT_MANAGER}}
+
+현재 작업 결과를 판단하고 Handoff를 생성하는 Manager의 아이콘 + 번호 + 정확한 Manager Name
+
+### {{NEXT_MANAGER}}
+
+다음 Handoff를 실제로 전달해야 하는 Manager의 아이콘 + 번호 + 정확한 Manager Name
 
 ## Self-Handoff
 
