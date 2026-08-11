@@ -43,15 +43,22 @@ const MonitoringHistoryScheduler = {
   },
 
   installRetentionTrigger: function(cadenceConfig, dependencies) {
-    const config = _validateMonitoringHistoryCadence_(cadenceConfig);
     const deps = _resolveMonitoringHistorySchedulerDeps_(dependencies);
     const before = this.inspectRetentionTriggers(deps);
     if (before.matchingCount > 1) {
       throw new Error('DUPLICATE_TRIGGER_STATE');
     }
     if (before.matchingCount === 1) {
+      const requestedMode = _classifyMonitoringHistoryDeploymentMode_(cadenceConfig);
+      if (requestedMode === 'UNSUPPORTED') {
+        throw new Error('UNSUPPORTED_DEPLOYMENT_MODE');
+      }
+      if (requestedMode === 'PRODUCTION') {
+        throw new Error('CONFIGURATION_VERIFICATION_REQUIRED');
+      }
       return {status: 'ALREADY_INSTALLED', created: false, inventory: before};
     }
+    const config = _validateMonitoringHistoryCadence_(cadenceConfig);
     if (config.productionApproved !== true) {
       throw new Error('PRODUCTION_TRIGGER_INSTALLATION_NOT_APPROVED');
     }
@@ -62,7 +69,12 @@ const MonitoringHistoryScheduler = {
     if (after.matchingCount !== 1) {
       throw new Error('TRIGGER_POST_INSTALL_VERIFICATION_FAILED');
     }
-    return {status: 'INSTALLED', created: true, inventory: after};
+    return {
+      status: 'INSTALLED',
+      created: true,
+      appliedConfig: _buildMonitoringHistoryAppliedConfig_(this.HANDLER_NAME, config),
+      inventory: after
+    };
   },
 
   uninstallRetentionTrigger: function(options, dependencies) {
@@ -160,15 +172,66 @@ function _validateMonitoringHistoryCadence_(config) {
   if (['MINUTES', 'HOURS', 'DAYS', 'WEEKS'].indexOf(unit) < 0 || !Number.isInteger(interval) || interval < 1) {
     throw new Error('INVALID_EXPLICIT_CADENCE');
   }
-  return Object.assign({}, config, {unit: unit, interval: interval});
+  const mode = _classifyMonitoringHistoryDeploymentMode_(config);
+  if (mode === 'UNSUPPORTED') throw new Error('UNSUPPORTED_DEPLOYMENT_MODE');
+  const normalized = Object.assign({}, config, {
+    unit: unit,
+    interval: interval,
+    configurationMode: mode
+  });
+  if (mode === 'PRODUCTION') {
+    if (normalized.productionApproved !== true) {
+      throw new Error('PRODUCTION_APPROVAL_REQUIRED');
+    }
+    if (unit !== 'DAYS') throw new Error('INVALID_PRODUCTION_UNIT');
+    if (interval !== 1) throw new Error('INVALID_PRODUCTION_INTERVAL');
+    const atHour = Number(normalized.atHour);
+    if (!Number.isInteger(atHour) || atHour < 0 || atHour > 23) {
+      throw new Error('INVALID_PRODUCTION_AT_HOUR');
+    }
+    if (atHour !== 3) throw new Error('UNAPPROVED_PRODUCTION_AT_HOUR');
+    if (normalized.timezone !== 'Asia/Seoul') {
+      throw new Error('INVALID_PRODUCTION_TIMEZONE');
+    }
+    normalized.atHour = 3;
+    normalized.timezone = 'Asia/Seoul';
+    normalized.deploymentMode = 'PRODUCTION';
+  }
+  return normalized;
 }
 
 function _applyMonitoringHistoryCadence_(builder, config) {
   if (config.unit === 'MINUTES') builder.everyMinutes(config.interval);
   if (config.unit === 'HOURS') builder.everyHours(config.interval);
-  if (config.unit === 'DAYS') builder.everyDays(config.interval);
+  if (config.unit === 'DAYS') {
+    if (config.configurationMode === 'PRODUCTION') builder.atHour(config.atHour);
+    builder.everyDays(config.interval);
+    if (config.configurationMode === 'PRODUCTION') builder.inTimezone(config.timezone);
+  }
   if (config.unit === 'WEEKS') builder.everyWeeks(config.interval);
   return builder;
+}
+
+function _classifyMonitoringHistoryDeploymentMode_(config) {
+  if (!config || config.deploymentMode === undefined || config.deploymentMode === null) {
+    return 'LEGACY_COMPATIBILITY';
+  }
+  const mode = String(config.deploymentMode).trim().toUpperCase();
+  return mode === 'PRODUCTION' ? 'PRODUCTION' : 'UNSUPPORTED';
+}
+
+function _buildMonitoringHistoryAppliedConfig_(handler, config) {
+  const applied = {
+    configurationMode: config.configurationMode,
+    handler: handler,
+    unit: config.unit,
+    interval: config.interval
+  };
+  if (config.configurationMode === 'PRODUCTION') {
+    applied.atHour = config.atHour;
+    applied.timezone = config.timezone;
+  }
+  return applied;
 }
 
 function _sanitizeMonitoringSchedulerMessage_(message) {
