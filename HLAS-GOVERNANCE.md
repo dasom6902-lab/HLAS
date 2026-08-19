@@ -2,9 +2,15 @@
 
 ## Current Active Governance Version
 
-HLAS Manager Responsibility Rule v2.1
+HLAS Manager Responsibility Rule v2.2
 
 Status: ACTIVE
+
+## Previous Active Version
+
+HLAS Manager Responsibility Rule v2.1
+
+Previous Version Status: SUPERSEDED / PRESERVED
 
 ## Canonical Priority
 
@@ -12,14 +18,16 @@ Status: ACTIVE
 2. Current Revision Registry
 3. Current ACTIVE Operational Routing Rule
 4. Current Handoff Routing Template
-5. Activation Governance Record
+5. Architecture Approval Record
+6. Activation Governance Record
 
 ## Current Canonical References
 
-- `SourceEvidence/HLAS-v2.1/RevisionRegistry.md`
-- `SourceEvidence/HLAS-v2.1/OperationalRoutingRule.md`
-- `SourceEvidence/HLAS-v2.1/HandoffRoutingTemplate.md`
-- `SourceEvidence/HLAS-v2.1/ActivationGovernanceRecord.md`
+- `SourceEvidence/HLAS-v2.2/RevisionRegistry.md`
+- `SourceEvidence/HLAS-v2.2/OperationalRoutingRule.md`
+- `SourceEvidence/HLAS-v2.2/HandoffRoutingTemplate.md`
+- `SourceEvidence/HLAS-v2.2/ArchitectureApprovalRecord.md`
+- `SourceEvidence/HLAS-v2.2/ActivationGovernanceRecord.md`
 
 ## Current Manager Structure
 
@@ -40,7 +48,7 @@ GitHub Current ACTIVE Governance
 
 >
 
-Task Approved Architecture / Governance Record
+Approved Task Architecture / Governance Record
 
 >
 
@@ -50,14 +58,56 @@ Current Handoff Prompt
 
 Previous Chat Memory
 
-## Legacy Rule
+## Active Routing Principle
 
-Legacy / Superseded Governance 문서는 Current ACTIVE Rule보다 우선하지 않는다.
+NON-CODING Repository Execution:
+
+💬③_Coding_Manager_Chat_v2
+
+CODING / RUNTIME SOURCE Execution:
+
+⚙️④_Coding_Manager_Work_v2
+
+④ Invocation:
+
+Actual Coding / Runtime Source Requirement only
+
+Local / Git / CLI / Repository Operation alone:
+
+NOT A ④ TRIGGER
+
+## Self-Handoff Rule
+
+Current Manager = Next Manager:
+
+NO HANDOFF PROMPT
+
+Self-Handoff:
+
+PROHIBITED
+
+## Historical Preservation
+
+HLAS v2.1 Governance Files:
+
+UNCHANGED / PRESERVED
+
+Legacy Governance Records:
+
+UNCHANGED / PRESERVED
+
+Closed Task History:
+
+UNCHANGED
+
+Existing Commit History Rewrite:
+
+NONE
 
 ## Current Version Boundary
 
-Current Active Version: v2.1
+Current Active Version: v2.2
 
-HLAS v2.2 Status: PROPOSED / ARCHITECTURE REVIEW PENDING
+Previous Active Version: v2.1
 
-HLAS v2.2 is not active until the required Architecture Review and subsequent governance activation are completed.
+Previous Version Status: SUPERSEDED / PRESERVED
