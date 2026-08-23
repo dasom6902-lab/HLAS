@@ -3,23 +3,18 @@
 ## Status
 
 Revision: HLAS Manager Responsibility Rule v2.3
-Current Stage: ACTIVATION PREPARATION
-Official Activation: NOT YET PERFORMED
-Current ACTIVE Governance until activation: v2.2
+Status: ACTIVE
+Official Activation: PERFORMED
+Previous Active Governance: v2.2
+Previous Revision Status: SUPERSEDED / PRESERVED
 
 ## Activation Authority
 
-Only 🧭①_Project_Control_Record_Manager_v2 may:
-- declare v2.3 ACTIVE
-- activate the 5-Manager Structure
-- officially activate 🌐⑤_WebApp_Manager_v1
-- perform final metadata verification
-- perform final content verification
-- close HLAS-0105
+Activation was performed by 🧭①_Project_Control_Record_Manager_v2 after final metadata and content verification.
 
-## Activation Preconditions
+## Activation Preconditions Verification
 
-Before activation, ① shall verify:
+PASS:
 1. All six SourceEvidence/HLAS-v2.3 artifacts exist.
 2. 5-Manager structure matches the Architecture PASS.
 3. ⑤ WebApp ownership is exact.
@@ -27,24 +22,28 @@ Before activation, ① shall verify:
 5. ③ Mandatory QA Gate is preserved.
 6. ② Architecture Authority is preserved.
 7. ① Final Authority is preserved.
-8. SourceEvidence/HLAS-v2.2/* is unchanged.
-9. Closed history is unchanged.
-10. No Runtime/App Script/Spreadsheet/Trigger/Drive Production mutation occurred.
+8. SourceEvidence/HLAS-v2.2/* is preserved and unchanged by HLAS-0105 preparation diff.
+9. Closed history is unchanged by HLAS-0105 preparation diff.
+10. No Runtime / Apps Script / Spreadsheet / Trigger / Drive Production mutation occurred.
 11. No force push or Git history rewrite occurred.
-12. Canonical HLAS-GOVERNANCE.md activation state is coherent.
+12. Canonical HLAS-GOVERNANCE.md activation state is updated coherently to v2.3 ACTIVE.
 
-## Prepared Activation Effect
+## Activated Governance Effect
 
-After ① activation only:
-- HLAS Manager Responsibility Rule v2.3 becomes ACTIVE.
-- v2.2 becomes SUPERSEDED / PRESERVED.
-- 🌐⑤_WebApp_Manager_v1 becomes officially ACTIVE for approved WebApp/Web UI implementation routing.
+- HLAS Manager Responsibility Rule v2.3 is ACTIVE.
+- v2.2 is SUPERSEDED / PRESERVED.
+- 🌐⑤_WebApp_Manager_v1 is officially ACTIVE for approved WebApp/Web UI implementation routing.
 - Ordinary WebApp work routes ① → ② if needed → ③ → ⑤ → ③ → ①.
 - Core/Critical Runtime work escalates to ④.
+- Architecture changes require ② re-review.
 
-## Current Preparation Boundary
+## Active 5-Manager Structure
 
-This record is activation evidence preparation only. Its existence does not activate v2.3 or ⑤.
+1. 🧭①_Project_Control_Record_Manager_v2
+2. 🏛️②_Architecture_Manager_v2
+3. 💬③_Coding_Manager_Chat_v2
+4. ⚙️④_Coding_Manager_Work_v2 — CORE / CRITICAL CODING & RUNTIME ESCALATION MANAGER
+5. 🌐⑤_WebApp_Manager_v1 — WEBAPP / WEB UI PRIMARY IMPLEMENTATION MANAGER
 
 Runtime Source Change: NONE
 Apps Script Change: NONE
@@ -52,3 +51,5 @@ Spreadsheet Mutation: NONE
 Trigger Mutation: NONE
 Drive Mutation: NONE
 Production Execution: NONE
+Force Push: NONE
+Git History Rewrite: NONE
