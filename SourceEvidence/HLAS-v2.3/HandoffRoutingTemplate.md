@@ -3,7 +3,7 @@
 ## Status
 
 Revision: HLAS Manager Responsibility Rule v2.3
-Stage: ACTIVATION PREPARATION
+Status: ACTIVE
 Official Activation Authority: 🧭①_Project_Control_Record_Manager_v2
 
 ## Governance Read-First
@@ -24,14 +24,12 @@ Current Handoff Prompt
 >
 Previous Chat Memory
 
-Until ① activates v2.3, v2.2 remains the Current ACTIVE Governance.
-
 ## Task Classification
 
 Execution Class: NON-CODING / WEBAPP CODING / CORE CODING / MIXED
 Architecture Impact: YES / NO / RESOLVED
 
-## Routing After v2.3 Activation
+## Routing
 
 ### Ordinary WebApp
 ① → ② if architecture review needed → ③ planning/QA contract → ⑤ implementation → ③ verification/evidence → ① final closure
@@ -74,4 +72,8 @@ When another Manager handoff is required:
 
 ## Official Final Authority
 
-Only 🧭①_Project_Control_Record_Manager_v2 may activate Governance v2.3, activate the 5-Manager Structure, officially activate 🌐⑤_WebApp_Manager_v1, perform final metadata/content verification, and close HLAS-0105.
+Only 🧭①_Project_Control_Record_Manager_v2 may perform final metadata/content verification and Official Final Closure.
+
+## Historical Protection
+
+v2.2 is SUPERSEDED / PRESERVED. Historical v2.2 and closed task records remain unchanged.
