@@ -2,23 +2,13 @@
 
 ## Current Active Governance Version
 
-HLAS Manager Responsibility Rule v2.2
+HLAS Manager Responsibility Rule v2.3
 
 Status: ACTIVE
 
-## Pending Activation Revision
-
-HLAS Manager Responsibility Rule v2.3
-
-Status: ACTIVATION PREPARATION
-
-Official Activation Authority: 🧭①_Project_Control_Record_Manager_v2
-
-IMPORTANT: v2.3 and 🌐⑤_WebApp_Manager_v1 are NOT ACTIVE until ① completes Final Metadata Verification, Final Content Verification, and official activation.
-
 ## Previous Active Version
 
-HLAS Manager Responsibility Rule v2.1
+HLAS Manager Responsibility Rule v2.2
 
 Previous Version Status: SUPERSEDED / PRESERVED
 
@@ -30,16 +20,9 @@ Previous Version Status: SUPERSEDED / PRESERVED
 4. Current Handoff Routing Template
 5. Architecture Approval Record
 6. Activation Governance Record
+7. WebApp Manager Responsibility Boundary
 
-## Current ACTIVE References — v2.2
-
-- `SourceEvidence/HLAS-v2.2/RevisionRegistry.md`
-- `SourceEvidence/HLAS-v2.2/OperationalRoutingRule.md`
-- `SourceEvidence/HLAS-v2.2/HandoffRoutingTemplate.md`
-- `SourceEvidence/HLAS-v2.2/ArchitectureApprovalRecord.md`
-- `SourceEvidence/HLAS-v2.2/ActivationGovernanceRecord.md`
-
-## Pending Activation References — v2.3
+## Current Canonical References — v2.3
 
 - `SourceEvidence/HLAS-v2.3/RevisionRegistry.md`
 - `SourceEvidence/HLAS-v2.3/OperationalRoutingRule.md`
@@ -48,16 +31,7 @@ Previous Version Status: SUPERSEDED / PRESERVED
 - `SourceEvidence/HLAS-v2.3/ActivationGovernanceRecord.md`
 - `SourceEvidence/HLAS-v2.3/WebAppManagerResponsibilityBoundary.md`
 
-These v2.3 references are activation-preparation evidence only until ① activates v2.3.
-
-## Current ACTIVE Manager Structure — v2.2
-
-- 🧭①_Project_Control_Record_Manager_v2
-- 🏛️②_Architecture_Manager_v2
-- 💬③_Coding_Manager_Chat_v2
-- ⚙️④_Coding_Manager_Work_v2
-
-## Approved Pending Manager Structure — v2.3
+## Current ACTIVE Manager Structure — v2.3
 
 1. 🧭①_Project_Control_Record_Manager_v2
 2. 🏛️②_Architecture_Manager_v2
@@ -65,108 +39,110 @@ These v2.3 references are activation-preparation evidence only until ① activat
 4. ⚙️④_Coding_Manager_Work_v2 — CORE / CRITICAL CODING & RUNTIME ESCALATION MANAGER
 5. 🌐⑤_WebApp_Manager_v1 — WEBAPP / WEB UI PRIMARY IMPLEMENTATION MANAGER
 
-Pending structure status: NOT ACTIVE.
-
 ## Governance Read-First Rule
 
 모든 Manager는 HLAS Task 수행 전에 `HLAS-GOVERNANCE.md`를 먼저 조회한다.
 
 그 후 Current ACTIVE Governance References를 확인한다.
 
-Until ① officially activates v2.3, v2.2 remains the Current ACTIVE Governance and routing authority.
-
 ## Conflict Priority
 
 GitHub Current ACTIVE Governance
-
 >
-
 Approved Task Architecture / Governance Record
-
 >
-
 Current Handoff Prompt
-
 >
-
 Previous Chat Memory
 
-## Current ACTIVE Routing Principle — v2.2
+## Current ACTIVE Routing Principle — v2.3
 
-NON-CODING Repository Execution:
+### Ordinary WebApp
 
-💬③_Coding_Manager_Chat_v2
+① Task Control
+→ ② if Architecture Impact = YES
+→ ③ Implementation Planning + Mandatory QA Contract
+→ ⑤ WebApp Implementation
+→ ③ Verification / Evidence
+→ ① Official Final Closure
 
-CODING / RUNTIME SOURCE Execution:
+④ is not mandatory for ordinary WebApp implementation.
 
-⚙️④_Coding_Manager_Work_v2
+### Core / Critical Runtime
 
-④ Invocation:
+① / ③ / ⑤
+→ ④ Core/Critical Runtime implementation or remediation
+→ ③ Verification / Evidence
+→ ① Official Final Closure
 
-Actual Coding / Runtime Source Requirement only
+### Architecture Change
 
-Local / Git / CLI / Repository Operation alone:
+→ ② re-review before implementation continues.
 
-NOT A ④ TRIGGER
+## Manager Responsibility Boundary
 
-## Pending v2.3 Routing Principle — NOT ACTIVE
+### 🧭①_Project_Control_Record_Manager_v2
+- Task Control
+- Workflow Routing
+- Official Governance Ownership
+- Final Metadata Verification
+- Final Content Verification
+- Governance Activation Authority
+- Final Closure
 
-After official v2.3 activation only:
+### 🏛️②_Architecture_Manager_v2
+- Architecture Authority
+- Responsibility Boundary Review
+- Architecture Impact Decision
+- Architecture Re-review
 
-Ordinary WebApp:
+### 💬③_Coding_Manager_Chat_v2
+- Implementation Planning
+- Mandatory QA Gate
+- Exact source boundary / Before hash / rollback / backup contract review
+- Post-implementation verification
+- NON-CODING GitHub / Repository / Evidence execution
+- Hash / Blob / Diff verification
+- Official record storage
 
-① → ② if needed → ③ → ⑤ → ③ → ①
+### ⚙️④_Coding_Manager_Work_v2
+CORE / CRITICAL CODING & RUNTIME ESCALATION MANAGER.
 
-Core / Critical Runtime:
+### 🌐⑤_WebApp_Manager_v1
+WEBAPP / WEB UI PRIMARY IMPLEMENTATION MANAGER.
 
-① / ③ / ⑤ → ④ → ③ → ①
-
-Architecture change:
-
-→ ② re-review
-
-③ Mandatory QA Gate remains preserved.
-② Architecture Authority remains preserved.
-① Final Activation / Closure Authority remains preserved.
+⑤ may perform approved WebApp implementation after ③ planning/QA. If core business/service/repository logic, authorization/security changes, destructive operations, Trigger/Scheduler, ProductionSafetyGuard, major refactor, high-risk Production work, or unresolved Runtime defects are encountered: STOP → ③ → ④ escalation.
 
 ## Self-Handoff Rule
 
 Current Manager = Next Manager:
-
-NO HANDOFF PROMPT
-
-Self-Handoff:
-
-PROHIBITED
+NO HANDOFF PROMPT.
+Self-Handoff: PROHIBITED.
 
 ## Historical Preservation
 
 HLAS v2.2 Governance Files:
-
 UNCHANGED / PRESERVED
 
 HLAS v2.1 Governance Files:
-
 UNCHANGED / PRESERVED
 
 Legacy Governance Records:
-
 UNCHANGED / PRESERVED
 
 Closed Task History:
-
 UNCHANGED
 
 Existing Commit History Rewrite:
-
 NONE
+
+Force Push:
+PROHIBITED
 
 ## Current Version Boundary
 
-Current Active Version: v2.2
-
-Pending Activation Revision: v2.3
-
-v2.3 Activation State: ACTIVATION PREPARATION / NOT ACTIVE
-
-Official v2.3 Activation Authority: 🧭①_Project_Control_Record_Manager_v2
+Current Active Version: v2.3
+Previous Active Version: v2.2
+Previous Version Status: SUPERSEDED / PRESERVED
+5-Manager Structure: ACTIVE
+🌐⑤_WebApp_Manager_v1: ACTIVE
