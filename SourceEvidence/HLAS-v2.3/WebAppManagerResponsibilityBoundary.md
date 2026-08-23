@@ -4,7 +4,7 @@
 
 Manager: 🌐⑤_WebApp_Manager_v1
 Governance Revision: v2.3
-Activation State: PENDING_ACTIVATION until ① official activation
+Activation State: ACTIVE
 
 ## Primary Responsibility
 
@@ -23,7 +23,7 @@ Activation State: PENDING_ACTIVATION until ① official activation
 - google.script.run UI integration
 - bounded WebApp presentation adapters
 
-## Direct Coding Authorization After v2.3 Activation
+## Direct Coding Authorization
 
 ⑤ may directly implement approved WebApp work when:
 - actual Project B Runtime is confirmed
