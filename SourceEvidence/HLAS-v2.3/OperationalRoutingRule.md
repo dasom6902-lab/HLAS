@@ -3,14 +3,12 @@
 ## Status
 
 Revision: HLAS Manager Responsibility Rule v2.3
-Stage: ACTIVATION PREPARATION
+Status: ACTIVE
 Architecture Decision: PASS
 Runtime Source Change: NONE
 Apps Script Change: NONE
 Spreadsheet Mutation: NONE
 Trigger Mutation: NONE
-
-This rule becomes ACTIVE only after 🧭①_Project_Control_Record_Manager_v2 completes official activation.
 
 ## Manager Responsibility Boundary
 
@@ -78,7 +76,7 @@ Primary scope:
 → ③ Verification / Evidence
 → ① Official Final Closure
 
-④ is not mandatory for ordinary WebApp implementation after v2.3 activation.
+④ is not mandatory for ordinary WebApp implementation.
 
 ## Core / Critical Runtime Route
 
@@ -115,7 +113,8 @@ Current Manager = Next Manager: no handoff prompt. Self-handoff is PROHIBITED.
 
 ## Historical Protection
 
-- SourceEvidence/HLAS-v2.2/* unchanged
+- SourceEvidence/HLAS-v2.2/* unchanged / preserved
+- v2.2 status: SUPERSEDED / PRESERVED
 - Closed task evidence unchanged
 - Existing Git history rewrite prohibited
 - Force push prohibited
